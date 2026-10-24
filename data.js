@@ -11,6 +11,18 @@ window.EXERCISES = [
     page: "hook.html",
     thumb: "hook.png",
     added: "2026-10"
+  },
+  {
+    id: "handle",
+    title: "手柄",
+    cat: "圆弧连接",
+    level: "经典",
+    steps: 11,
+    brief: "Ø20 杆 + Ø12 内孔，右侧 R60 鼓包与 SR7 球头内切、R42 颈部与杆线相切并与鼓包外切——三种圆弧连接的典型练习。",
+    tags: ["Ø20", "Ø12", "R42", "R60", "Ø30", "SR7", "22", "38", "117", "124"],
+    page: "handle.html",
+    thumb: "handle.png",
+    added: "2026-10"
   }
 ];
 
