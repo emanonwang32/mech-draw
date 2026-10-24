@@ -1,5 +1,5 @@
 /* 题库数据：新增题目只需在这里加一条（并把对应的动画页 + 缩略图放进同目录） */
-const EXERCISES = [
+window.EXERCISES = [
   {
     id: "hook",
     title: "吊钩",
@@ -15,6 +15,6 @@ const EXERCISES = [
 ];
 
 /* 即将加入（占位，无链接） */
-const SOON = [
+window.SOON = [
   "手柄", "扳手", "挂轮架", "支座", "摇臂", "三视图", "剖视图", "台阶轴", "螺纹连接", "键连接"
 ];
