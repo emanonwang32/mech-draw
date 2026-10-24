@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>机械制图 · 分步动态作图库｜搜索吊钩、圆弧连接、手柄等作图过程</title>
+<meta name="description" content="机械制图作业动态作图库：搜索图形名称或尺寸（吊钩、手柄、R24、Ø24、圆弧连接），即可一步步播放作图过程，支持手机与电脑。">
+<style>
+  :root{--bg:#f4f6fa;--card:#fff;--ink:#1d2a3a;--muted:#6d7d92;--line:#dde5ef;--brand:#12507f;--brand2:#2f8f83;--amber:#d99a2b}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -200px,#e8f0fb 0%,var(--bg) 60%);color:var(--ink);min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 18px 60px}
+  /* 顶部 */
+  .hero{text-align:center;padding:18px 0 6px}
+  .hero h1{margin:0;font-size:clamp(22px,3.6vw,34px);letter-spacing:.5px}
+  .hero h1 b{color:var(--brand)}
+  .hero p{margin:10px auto 0;max-width:640px;color:var(--muted);font-size:14.5px;line-height:1.8}
+  .search{margin:26px auto 0;max-width:640px;position:relative}
+  .search input{width:100%;font:inherit;font-size:16px;padding:15px 52px 15px 48px;border-radius:14px;border:1.5px solid var(--line);
+    background:#fff;box-shadow:0 6px 22px rgba(20,50,90,.07);outline:none;transition:.2s;color:var(--ink)}
+  .search input:focus{border-color:#8fb6dd;box-shadow:0 8px 26px rgba(20,50,90,.13)}
+  .search .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;opacity:.45}
+  .search kbd{position:absolute;right:14px;top:50%;transform:translateY(-50%);font:600 11px/1 ui-monospace,monospace;
+    color:#8a9bb0;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:4px 7px;background:#fafcff}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 0}
+  .chip{font:inherit;font-size:13px;padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:#fff;color:#4a5c72;cursor:pointer;transition:.16s}
+  .chip:hover{border-color:#a8c4e0;background:#f6fafe}
+  .chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .stat{display:flex;align-items:baseline;gap:10px;margin:26px 2px 12px;color:var(--muted);font-size:13px}
+  .stat b{color:var(--ink);font-size:15px}
+  /* 卡片 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .card{display:flex;flex-direction:column;background:var(--card);border-radius:16px;border:1px solid var(--line);
+    overflow:hidden;text-decoration:none;color:inherit;transition:.2s;box-shadow:0 2px 10px rgba(20,50,90,.05)}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,50,90,.13);border-color:#c6d9ec}
+  .thumb{position:relative;background:#fbfaf6;border-bottom:1px solid #eef2f7;height:238px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .thumb img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .badge{position:absolute;left:10px;top:10px;background:rgba(18,80,127,.92);color:#fff;font-size:11.5px;padding:3px 9px;border-radius:7px;letter-spacing:.5px}
+  .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .title h3{margin:0;font-size:17px}
+  .title .cat{font-size:12px;color:var(--brand2);background:#eff7f5;border-radius:6px;padding:2px 7px}
+  .brief{font-size:13px;line-height:1.72;color:#51627a;margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+  .tags span{font:600 11.5px/1 "Cambria","Times New Roman",serif;color:#7b6a3a;background:#faf6ea;border:1px solid #efe4c8;border-radius:5px;padding:4px 6px}
+  .foot{margin-top:auto;padding-top:10px;display:flex;align-items:center;gap:8px;border-top:1px dashed #edf1f6}
+  .foot .steps{font-size:12.5px;color:var(--muted)}
+  .foot .go{margin-left:auto;background:var(--brand);color:#fff;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px}
+  .card:hover .foot .go{background:#0e4470}
+  .empty{padding:56px 20px;text-align:center;color:var(--muted);font-size:14px;line-height:2}
+  .empty b{color:var(--ink)}
+  .empty a{color:var(--brand)}
+  .soon{margin-top:40px;padding-top:22px;border-top:1px solid #e6edf5}
+  .soon h2{font-size:14px;color:var(--muted);margin:0 0 12px;font-weight:600;letter-spacing:1px}
+  .soon .list{display:flex;flex-wrap:wrap;gap:8px}
+  .soon span{font-size:12.5px;color:#8a9bb0;background:#fff;border:1px dashed #dde5ef;border-radius:99px;padding:6px 12px}
+  footer{margin-top:44px;text-align:center;color:#93a3b8;font-size:12px;line-height:2}
+  footer a{color:#6d8db0;text-decoration:none}
+  @media (max-width:640px){
+    .wrap{padding:18px 14px 44px}
+    .thumb{height:196px}
+    .chips{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
+    .chip{flex:0 0 auto}
+    .hero p{font-size:13.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>机械制图 · <b>分步动态作图库</b></h1>
+    <p>搜索图形名称、代号或尺寸（如 <b>吊钩</b>、<b>R24</b>、<b>Ø24</b>、<b>圆弧连接</b>），点开就是一步一步的动态作图演示。
+       <br>每一步都有作图要点、圆心求法，可单步、可播放、可回退。</p>
+    <div class="search">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#26405c" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.2-4.2"/></svg>
+      <input id="q" type="search" autocomplete="off" placeholder="搜索：吊钩 / 手柄 / R24 / 圆弧连接 …" aria-label="搜索题目">
+      <kbd>/</kbd>
+    </div>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <div class="stat"><b id="cnt">0</b> 道题 <span id="kw"></span></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">
+    没有找到 <b id="emptyq"></b> 的题目。<br>
+    目前题库还在补充中 —— 你可以把作业图拍照发给我，我加进来。<br>
+    <a href="hook.html">先看看已有的：吊钩 · 圆弧连接</a>
+  </div>
+
+  <section class="soon">
+    <h2>即将加入</h2>
+    <div class="list" id="soon"></div>
+  </section>
+
+  <footer>
+    <div>动态作图库 · 每张图都按“基准 → 定位 → 已知线段 → 求圆心 → 圆弧相切 → 修剪 → 加深 → 标注”的统一方法讲解</div>
+    <div>支持手机与电脑 · 可单步播放 · 可导出 PNG</div>
+  </footer>
+</div>
+<script src="data.js"></script>
+<script>
+"use strict";
+(function(){
+  const GRID=document.getElementById("grid"), CNT=document.getElementById("cnt"),
+        KW=document.getElementById("kw"), EMPTY=document.getElementById("empty"),
+        EMPTYQ=document.getElementById("emptyq"), CHIPS=document.getElementById("chips"),
+        Q=document.getElementById("q");
+  const EXERCISES = window.EXERCISES || [];
+  const cats = ["全部", ...Array.from(new Set(EXERCISES.map(e=>e.cat)))];
+  let cat = "全部", word = "";
+
+  // 分类按钮
+  cats.forEach((c,i)=>{
+    const b=document.createElement("button");
+    b.className="chip"+(i===0?" on":""); b.textContent=c; b.dataset.c=c;
+    b.onclick=()=>{cat=c;[...CHIPS.children].forEach(x=>x.classList.toggle("on",x===b));render();};
+    CHIPS.appendChild(b);
+  });
+
+  const hay = e => (e.title+" "+e.cat+" "+(e.brief||"")+" "+(e.tags||[]).join(" ")).toLowerCase();
+  function render(){
+    const kw = word.trim().toLowerCase();
+    const list = EXERCISES.filter(e => (cat==="全部"||e.cat===cat) && (!kw || hay(e).includes(kw)));
+    GRID.innerHTML = "";
+    list.forEach(e=>{
+      const a=document.createElement("a");
+      a.className="card"; a.href=e.page; a.setAttribute("aria-label", e.title+" 动态作图");
+      a.innerHTML = `
+        <div class="thumb">
+          <span class="badge">${e.cat}</span>
+          <img src="${e.thumb}" alt="${e.title} 动态作图演示缩略图" loading="lazy">
+        </div>
+        <div class="body">
+          <div class="title"><h3>${e.title}</h3><span class="cat">${e.level||""}</span></div>
+          <p class="brief">${e.brief||""}</p>
+          <div class="tags">${(e.tags||[]).slice(0,8).map(t=>`<span>${t}</span>`).join("")}</div>
+          <div class="foot"><span class="steps">${e.steps} 步动态作图</span><span class="go">开始演示 ▶</span></div>
+        </div>`;
+      GRID.appendChild(a);
+    });
+    CNT.textContent=list.length;
+    KW.textContent = kw ? `· 匹配 “${word.trim()}”` : "";
+    EMPTY.style.display = list.length? "none":"block";
+    EMPTYQ.textContent = word.trim() || cat;
+    document.title = (kw? word.trim()+" · ":"") + "机械制图 · 分步动态作图库";
+  }
+  // 即将加入
+  const soon = window.SOON || [];
+  soon.forEach(s=>{const x=document.createElement("span");x.textContent=s;document.getElementById("soon").appendChild(x);});
+
+  let t=null;
+  Q.addEventListener("input",()=>{clearTimeout(t);t=setTimeout(()=>{
+    word=Q.value;render();
+    const u=new URL(location.href); if(word.trim())u.searchParams.set("q",word.trim()); else u.searchParams.delete("q");
+    history.replaceState(null,"",u);
+  },90);});
+  document.addEventListener("keydown",e=>{
+    if(e.key==="/" && document.activeElement!==Q){e.preventDefault();Q.focus();Q.select();}
+    if(e.key==="Escape" && document.activeElement===Q){Q.value="";word="";render();Q.blur();}
+  });
+  const initQ = new URLSearchParams(location.search).get("q");
+  if(initQ){Q.value=initQ;word=initQ;}
+  render();
+})();
+</script>
+</body>
+</html>
