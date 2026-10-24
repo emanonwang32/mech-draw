@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>瓶体（花瓶）· 圆弧连接分步作图｜机械制图动态演示</title>
+<style>
+ :root{--paper:#fbfaf6;--amber:#d99a2b;--teal:#2f8f83;--dim:#3c4d63;--txt:#22303f;--muted:#6b7b8f}
+ *{box-sizing:border-box} html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%}
+ body{font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:linear-gradient(180deg,#eef2f7,#e7edf4);color:var(--txt);min-height:100vh}
+ .app{max-width:1320px;margin:0 auto;padding:14px 18px 22px}
+ header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+ header h1{font-size:20px;margin:0} header .sub{font-size:13px;color:var(--muted)}
+ .main{display:grid;grid-template-columns:minmax(300px,366px) 1fr;gap:16px;align-items:start}
+ .card{background:#fff;border-radius:14px;box-shadow:0 2px 14px rgba(24,50,80,.09);padding:13px 15px;min-width:0}
+ .col{display:flex;flex-direction:column;gap:12px;min-width:0}
+ .steplist{display:flex;flex-direction:column;gap:3px;max-height:clamp(140px,26vh,300px);overflow:auto;padding-right:4px;min-width:0}
+ .stepbtn{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:center;border:1px solid transparent;background:#f6f8fb;border-radius:8px;padding:5px 8px;cursor:pointer;font:inherit;font-size:12.8px;color:#3a4a5e;text-align:left;line-height:1.3}
+ .stepbtn:hover{background:#eef4fb;border-color:#cfe0f2}
+ .stepbtn .num{font-size:10.5px;color:#93a3b8;text-align:center}
+ .stepbtn.active{background:#e8f1fc;border-color:#9dc2e8;color:#123a63;font-weight:600}
+ h2.sec{font-size:11.5px;letter-spacing:2.4px;color:#8a9bb0;font-weight:600;margin:0 0 8px}
+ .infotitle{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+ .badge{background:#123a63;color:#fff;border-radius:7px;font-size:11.5px;padding:2px 7px}
+ .body{font-size:13px;line-height:1.72;color:#2d3d4f} .body p{margin:0 0 6px} .body .hi{color:#b03a2e;font-weight:600}
+ .keybox{background:#f3f8f5;border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:7px 10px;font-size:12.2px;line-height:1.6;color:#2e4a44}
+ .keybox ul{margin:3px 0 0;padding-left:15px}
+ .formula{font-family:Cambria,"Times New Roman",serif;background:#f8f5ec;border:1px dashed #ddd2b6;border-radius:8px;padding:5px 10px;font-size:12.6px;color:#6a5320;margin:7px 0 0}
+ .stage{padding:8px 10px 10px}
+ .svgbox{display:flex;justify-content:center;background:var(--paper);border-radius:10px}
+ svg#dw{display:block;height:calc(100vh - 286px);min-height:360px;width:auto;max-width:100%}
+ .controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:9px 3px 0}
+ button.ctl{font:inherit;font-size:12.6px;border-radius:9px;border:1px solid #cfdae7;background:#fff;color:#2b3d52;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+ button.ctl:hover{background:#f1f6fc}
+ button.ctl:disabled{opacity:.42;cursor:default}
+ button.ctl.primary{background:#123a63;border-color:#123a63;color:#fff}
+ .spacer{flex:1}
+ .progress{height:5px;background:#e4ebf3;border-radius:99px;overflow:hidden;margin:2px 4px 6px}
+ .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4f7fb8,#2f8f83);transition:width .45s}
+ .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.2px;color:#4a5c72;cursor:pointer}
+ .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.6px;color:#5b6b7f;padding:5px 6px 0}
+ .legend i{display:inline-block;width:20px;border-top:3px solid #16283f;vertical-align:middle;margin-right:4px}
+ .legend i.c{border-top:1.5px dashed #8fb0d6} .legend i.a{border-top:1.5px dashed #d99a2b} .legend i.d{border-top:1.5px solid #3c4d63}
+ .hint{font-size:11.8px;color:var(--muted);padding:6px 6px 0;line-height:1.7}
+ .dimtable{display:grid;grid-template-columns:1fr 1fr;gap:3px 7px;font-size:11.8px}
+ .dimrow{display:flex;gap:5px;padding:2px 4px;border-radius:6px;background:#f7f9fc}
+ .dimrow b{color:#123a63;font-family:Cambria,serif;min-width:40px}
+ .dimrow span{color:#5b6b7f}
+ .center{stroke:#8fb0d6;stroke-width:.5;fill:none;stroke-dasharray:9 2.5 1.2 2.5}
+ .aux{stroke:#d99a2b;stroke-width:.42;fill:none;stroke-dasharray:3.2 2.4}
+ .sketch{stroke:#2c4058;stroke-width:1.05;fill:none;stroke-linecap:round;stroke-linejoin:round}
+ .mark{stroke:#c8412f;stroke-width:.5;fill:none;stroke-linecap:round}
+ .ring{stroke:#e0703c;stroke-width:.55;fill:none}
+ .dline{stroke:#3c4d63;stroke-width:.42;fill:none;stroke-linecap:round}
+ .darrow{fill:#3c4d63}
+ .dtext{fill:#202f42;font-family:Cambria,"Times New Roman",serif;font-size:6.4px;text-anchor:middle;dominant-baseline:middle}
+ .clabel{fill:#a8452f;font-family:Cambria,serif;font-size:4.6px;dominant-baseline:middle}
+ #dw.deep .sketch{stroke-width:1.9;stroke:#08131f}
+ @media (max-width:920px){
+  .main{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .stage{order:-1} .spacer{display:none}
+  .steplist{max-height:none;flex-direction:row;overflow-x:auto;padding-bottom:6px}
+  .stepbtn{flex:0 0 auto;font-size:12px;padding:5px 8px}
+  svg#dw{height:auto;width:min(100%,calc(58vh*1.9));margin:0 auto}
+  .controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .controls button.ctl{width:100%;justify-content:center;padding:8px 4px;font-size:12px}
+  header h1{font-size:17px}
+ }
+ @media (max-width:400px){ .controls{grid-template-columns:repeat(2,minmax(0,1fr))} }
+</style>
+</head>
+<body>
+<div class="app">
+ <header><h1>瓶体 · 圆弧连接分步作图</h1>
+  <span class="sub">Ø20 颈 · R20 肩 · R40 腰 · R80 腹 · Ø46 底 · R10 圆角 · 总高 160</span></header>
+ <div class="main">
+  <div class="col">
+   <div class="card"><h2 class="sec">作 图 步 骤</h2><div class="steplist" id="steplist"></div></div>
+   <div class="card">
+    <div class="infotitle"><span class="badge" id="stepno">00</span><b id="steptitle">准备</b></div>
+    <div class="body" id="stepbody"><p>点击「播放」或「下一步」开始。</p></div>
+    <div class="keybox" id="stepkeys"></div>
+    <div class="formula" id="stepform" style="display:none"></div>
+   </div>
+   <div class="card"><h2 class="sec">尺 寸 含 义</h2><div class="dimtable" id="dimtable"></div></div>
+  </div>
+  <div class="card stage">
+   <div class="progress"><i id="bar"></i></div>
+   <div class="svgbox">
+    <svg id="dw" viewBox="-46 -26 92 232" xmlns="http://www.w3.org/2000/svg" width="520" height="1311">
+     <style>
+      .center{stroke:#8fb0d6;stroke-width:.5;fill:none;stroke-dasharray:9 2.5 1.2 2.5}
+      .aux{stroke:#d99a2b;stroke-width:.42;fill:none;stroke-dasharray:3.2 2.4}
+      .sketch{stroke:#2c4058;stroke-width:1.05;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .mark{stroke:#c8412f;stroke-width:.5;fill:none;stroke-linecap:round}
+      .ring{stroke:#e0703c;stroke-width:.55;fill:none}
+      .dline{stroke:#3c4d63;stroke-width:.42;fill:none;stroke-linecap:round}
+      .darrow{fill:#3c4d63}
+      .dtext{fill:#202f42;font-family:Cambria,'Times New Roman',serif;font-size:6.4px;text-anchor:middle;dominant-baseline:middle}
+      .clabel{fill:#a8452f;font-family:Cambria,serif;font-size:4.6px;dominant-baseline:middle}
+      #dw.deep .sketch{stroke-width:1.9;stroke:#08131f}
+     </style>
+     <defs>
+      <pattern id="g5" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="#eef2f6" stroke-width=".5"/></pattern>
+      <pattern id="g25" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="url(#g5)"/><path d="M50 0H0V50" fill="none" stroke="#e1e9f2" stroke-width=".7"/></pattern>
+     </defs>
+     <rect x="-46" y="-26" width="92" height="232" fill="url(#g25)"/>
+    </svg>
+   </div>
+   <div class="controls">
+    <button class="ctl" id="btnPrev">◀ 上一步</button>
+    <button class="ctl primary" id="btnPlay">▶ 播放</button>
+    <button class="ctl" id="btnNext">下一步 ▶</button>
+    <button class="ctl" id="btnReset">↺ 重来</button>
+    <span class="spacer"></span>
+    <label class="chk"><input type="checkbox" id="showaux" checked> 辅助线</label>
+    <button class="ctl" id="btnPng">导出 PNG</button>
+   </div>
+   <div class="legend"><span><i></i>粗实线：轮廓</span><span><i class="c"></i>点画线：中心线</span><span><i class="a"></i>虚线：作图辅助</span><span><i class="d"></i>细实线：尺寸</span></div>
+   <div class="hint">键盘 ← / → / 空格 · 点击左侧步骤可跳转</div>
+  </div>
+ </div>
+</div>
+<script>
+"use strict";
+const G={"outline":[[10,0],[9.9,-25.1],[10.3,-25.5],[10.7,-26.0],[11.1,-26.4],[11.5,-26.9],[11.8,-27.3],[12.2,-27.8],[12.6,-28.3],[12.9,-28.8],[13.3,-29.2],[13.6,-29.7],[13.9,-30.2],[14.3,-30.7],[14.6,-31.2],[14.9,-31.7],[15.2,-32.2],[15.6,-32.7],[15.9,-33.2],[16.1,-33.7],[16.4,-34.3],[16.7,-34.8],[17.0,-35.3],[17.3,-35.8],[17.5,-36.4],[17.8,-36.9],[18.0,-37.4],[18.3,-38.0],[18.5,-38.5],[18.8,-39.1],[19.0,-39.6],[19.2,-40.2],[19.4,-40.7],[19.6,-41.3],[19.8,-41.8],[20.0,-42.4],[20.2,-43.0],[20.4,-43.5],[20.5,-44.1],[20.7,-44.7],[20.9,-45.2],[21.0,-45.8],[20.5,-46.8],[19.9,-47.7],[19.4,-48.7],[18.9,-49.6],[18.5,-50.6],[18.0,-51.6],[17.6,-52.6],[17.1,-53.6],[16.7,-54.6],[16.3,-55.6],[16.0,-56.7],[15.6,-57.7],[15.3,-58.7],[14.9,-59.8],[14.6,-60.8],[14.3,-61.9],[14.1,-62.9],[13.8,-64.0],[13.6,-65.0],[13.4,-66.1],[13.2,-67.2],[13.0,-68.3],[12.9,-69.3],[12.7,-70.4],[12.6,-71.5],[12.5,-72.6],[12.4,-73.7],[12.3,-74.8],[12.3,-75.8],[12.3,-76.9],[12.2,-78.0],[12.3,-79.1],[12.3,-80.2],[12.3,-81.3],[12.4,-82.4],[12.5,-83.5],[12.6,-84.6],[12.7,-85.6],[12.8,-86.7],[13.0,-87.8],[13.9,-89.3],[14.8,-90.9],[15.7,-92.5],[16.6,-94.1],[17.3,-95.7],[18.1,-97.3],[18.8,-99.0],[19.5,-100.7],[20.1,-102.3],[20.7,-104.1],[21.2,-105.8],[21.7,-107.5],[22.1,-109.3],[22.5,-111.0],[22.8,-112.8],[23.2,-114.6],[23.4,-116.4],[23.6,-118.1],[23.8,-119.9],[23.9,-121.7],[24.0,-123.5],[24.0,-125.4],[24.0,-127.2],[23.9,-129.0],[23.8,-130.8],[23.6,-132.6],[23.4,-134.3],[23.1,-136.1],[22.8,-137.9],[22.5,-139.7],[22.1,-141.4],[21.6,-143.2],[21.1,-144.9],[20.6,-146.6],[20.0,-148.3],[19.4,-150.0],[18.7,-151.7],[18.0,-153.4],[17.3,-155.0],[16.5,-156.6],[16.4,-156.7],[16.3,-156.8],[16.3,-156.9],[16.2,-157.0],[16.1,-157.1],[16.1,-157.2],[16.0,-157.3],[15.9,-157.3],[15.9,-157.4],[15.8,-157.5],[15.7,-157.6],[15.7,-157.7],[15.6,-157.8],[15.5,-157.9],[15.5,-158.0],[15.4,-158.0],[15.3,-158.1],[15.2,-158.2],[15.2,-158.3],[15.1,-158.4],[15.0,-158.5],[15.0,-158.5],[14.9,-158.6],[14.8,-158.7],[14.7,-158.8],[14.7,-158.9],[14.6,-159.0],[14.5,-159.0],[14.4,-159.1],[14.4,-159.2],[14.3,-159.3],[14.2,-159.4],[14.1,-159.4],[14.1,-159.5],[14.0,-159.6],[13.9,-159.7],[13.8,-159.8],[13.8,-159.8],[13.7,-159.9],[13.6,-160.0],[0.0,-160],[-0.0,-160],[-13.6,-160.0],[-13.7,-159.9],[-13.8,-159.8],[-13.8,-159.8],[-13.9,-159.7],[-14.0,-159.6],[-14.1,-159.5],[-14.1,-159.4],[-14.2,-159.4],[-14.3,-159.3],[-14.4,-159.2],[-14.4,-159.1],[-14.5,-159.0],[-14.6,-159.0],[-14.7,-158.9],[-14.7,-158.8],[-14.8,-158.7],[-14.9,-158.6],[-15.0,-158.5],[-15.0,-158.5],[-15.1,-158.4],[-15.2,-158.3],[-15.2,-158.2],[-15.3,-158.1],[-15.4,-158.0],[-15.5,-158.0],[-15.5,-157.9],[-15.6,-157.8],[-15.7,-157.7],[-15.7,-157.6],[-15.8,-157.5],[-15.9,-157.4],[-15.9,-157.3],[-16.0,-157.3],[-16.1,-157.2],[-16.1,-157.1],[-16.2,-157.0],[-16.3,-156.9],[-16.3,-156.8],[-16.4,-156.7],[-16.5,-156.6],[-17.3,-155.0],[-18.0,-153.4],[-18.7,-151.7],[-19.4,-150.0],[-20.0,-148.3],[-20.6,-146.6],[-21.1,-144.9],[-21.6,-143.2],[-22.1,-141.4],[-22.5,-139.7],[-22.8,-137.9],[-23.1,-136.1],[-23.4,-134.3],[-23.6,-132.6],[-23.8,-130.8],[-23.9,-129.0],[-24.0,-127.2],[-24.0,-125.4],[-24.0,-123.5],[-23.9,-121.7],[-23.8,-119.9],[-23.6,-118.1],[-23.4,-116.4],[-23.2,-114.6],[-22.8,-112.8],[-22.5,-111.0],[-22.1,-109.3],[-21.7,-107.5],[-21.2,-105.8],[-20.7,-104.1],[-20.1,-102.3],[-19.5,-100.7],[-18.8,-99.0],[-18.1,-97.3],[-17.3,-95.7],[-16.6,-94.1],[-15.7,-92.5],[-14.8,-90.9],[-13.9,-89.3],[-13.0,-87.8],[-12.8,-86.7],[-12.7,-85.6],[-12.6,-84.6],[-12.5,-83.5],[-12.4,-82.4],[-12.3,-81.3],[-12.3,-80.2],[-12.3,-79.1],[-12.2,-78.0],[-12.3,-76.9],[-12.3,-75.8],[-12.3,-74.8],[-12.4,-73.7],[-12.5,-72.6],[-12.6,-71.5],[-12.7,-70.4],[-12.9,-69.3],[-13.0,-68.3],[-13.2,-67.2],[-13.4,-66.1],[-13.6,-65.0],[-13.8,-64.0],[-14.1,-62.9],[-14.3,-61.9],[-14.6,-60.8],[-14.9,-59.8],[-15.3,-58.7],[-15.6,-57.7],[-16.0,-56.7],[-16.3,-55.6],[-16.7,-54.6],[-17.1,-53.6],[-17.6,-52.6],[-18.0,-51.6],[-18.5,-50.6],[-18.9,-49.6],[-19.4,-48.7],[-19.9,-47.7],[-20.5,-46.8],[-21.0,-45.8],[-20.9,-45.2],[-20.7,-44.7],[-20.5,-44.1],[-20.4,-43.5],[-20.2,-43.0],[-20.0,-42.4],[-19.8,-41.8],[-19.6,-41.3],[-19.4,-40.7],[-19.2,-40.2],[-19.0,-39.6],[-18.8,-39.1],[-18.5,-38.5],[-18.3,-38.0],[-18.0,-37.4],[-17.8,-36.9],[-17.5,-36.4],[-17.3,-35.8],[-17.0,-35.3],[-16.7,-34.8],[-16.4,-34.3],[-16.1,-33.7],[-15.9,-33.2],[-15.6,-32.7],[-15.2,-32.2],[-14.9,-31.7],[-14.6,-31.2],[-14.3,-30.7],[-13.9,-30.2],[-13.6,-29.7],[-13.3,-29.2],[-12.9,-28.8],[-12.6,-28.3],[-12.2,-27.8],[-11.8,-27.3],[-11.5,-26.9],[-11.1,-26.4],[-10.7,-26.0],[-10.3,-25.5],[-9.9,-25.1],[-10,0]],"a1":[[9.9,-25.1],[10.3,-25.5],[10.7,-26.0],[11.1,-26.4],[11.5,-26.9],[11.8,-27.3],[12.2,-27.8],[12.6,-28.3],[12.9,-28.8],[13.3,-29.2],[13.6,-29.7],[13.9,-30.2],[14.3,-30.7],[14.6,-31.2],[14.9,-31.7],[15.2,-32.2],[15.6,-32.7],[15.9,-33.2],[16.1,-33.7],[16.4,-34.3],[16.7,-34.8],[17.0,-35.3],[17.3,-35.8],[17.5,-36.4],[17.8,-36.9],[18.0,-37.4],[18.3,-38.0],[18.5,-38.5],[18.8,-39.1],[19.0,-39.6],[19.2,-40.2],[19.4,-40.7],[19.6,-41.3],[19.8,-41.8],[20.0,-42.4],[20.2,-43.0],[20.4,-43.5],[20.5,-44.1],[20.7,-44.7],[20.9,-45.2],[21.0,-45.8]],"a2":[[21.0,-45.8],[20.5,-46.8],[19.9,-47.7],[19.4,-48.7],[18.9,-49.6],[18.5,-50.6],[18.0,-51.6],[17.6,-52.6],[17.1,-53.6],[16.7,-54.6],[16.3,-55.6],[16.0,-56.7],[15.6,-57.7],[15.3,-58.7],[14.9,-59.8],[14.6,-60.8],[14.3,-61.9],[14.1,-62.9],[13.8,-64.0],[13.6,-65.0],[13.4,-66.1],[13.2,-67.2],[13.0,-68.3],[12.9,-69.3],[12.7,-70.4],[12.6,-71.5],[12.5,-72.6],[12.4,-73.7],[12.3,-74.8],[12.3,-75.8],[12.3,-76.9],[12.2,-78.0],[12.3,-79.1],[12.3,-80.2],[12.3,-81.3],[12.4,-82.4],[12.5,-83.5],[12.6,-84.6],[12.7,-85.6],[12.8,-86.7],[13.0,-87.8]],"a3":[[13.0,-87.8],[13.9,-89.3],[14.8,-90.9],[15.7,-92.5],[16.6,-94.1],[17.3,-95.7],[18.1,-97.3],[18.8,-99.0],[19.5,-100.7],[20.1,-102.3],[20.7,-104.1],[21.2,-105.8],[21.7,-107.5],[22.1,-109.3],[22.5,-111.0],[22.8,-112.8],[23.2,-114.6],[23.4,-116.4],[23.6,-118.1],[23.8,-119.9],[23.9,-121.7],[24.0,-123.5],[24.0,-125.4],[24.0,-127.2],[23.9,-129.0],[23.8,-130.8],[23.6,-132.6],[23.4,-134.3],[23.1,-136.1],[22.8,-137.9],[22.5,-139.7],[22.1,-141.4],[21.6,-143.2],[21.1,-144.9],[20.6,-146.6],[20.0,-148.3],[19.4,-150.0],[18.7,-151.7],[18.0,-153.4],[17.3,-155.0],[16.5,-156.6]],"a4":[[16.5,-156.6],[16.4,-156.7],[16.3,-156.8],[16.3,-156.9],[16.2,-157.0],[16.1,-157.1],[16.1,-157.2],[16.0,-157.3],[15.9,-157.3],[15.9,-157.4],[15.8,-157.5],[15.7,-157.6],[15.7,-157.7],[15.6,-157.8],[15.5,-157.9],[15.5,-158.0],[15.4,-158.0],[15.3,-158.1],[15.2,-158.2],[15.2,-158.3],[15.1,-158.4],[15.0,-158.5],[15.0,-158.5],[14.9,-158.6],[14.8,-158.7],[14.7,-158.8],[14.7,-158.9],[14.6,-159.0],[14.5,-159.0],[14.4,-159.1],[14.4,-159.2],[14.3,-159.3],[14.2,-159.4],[14.1,-159.4],[14.1,-159.5],[14.0,-159.6],[13.9,-159.7],[13.8,-159.8],[13.8,-159.8],[13.7,-159.9],[13.6,-160.0],[0.0,-160]],"left":[[-10,0],[-9.9,-25.1],[-10.3,-25.5],[-10.7,-26.0],[-11.1,-26.4],[-11.5,-26.9],[-11.8,-27.3],[-12.2,-27.8],[-12.6,-28.3],[-12.9,-28.8],[-13.3,-29.2],[-13.6,-29.7],[-13.9,-30.2],[-14.3,-30.7],[-14.6,-31.2],[-14.9,-31.7],[-15.2,-32.2],[-15.6,-32.7],[-15.9,-33.2],[-16.1,-33.7],[-16.4,-34.3],[-16.7,-34.8],[-17.0,-35.3],[-17.3,-35.8],[-17.5,-36.4],[-17.8,-36.9],[-18.0,-37.4],[-18.3,-38.0],[-18.5,-38.5],[-18.8,-39.1],[-19.0,-39.6],[-19.2,-40.2],[-19.4,-40.7],[-19.6,-41.3],[-19.8,-41.8],[-20.0,-42.4],[-20.2,-43.0],[-20.4,-43.5],[-20.5,-44.1],[-20.7,-44.7],[-20.9,-45.2],[-21.0,-45.8],[-20.5,-46.8],[-19.9,-47.7],[-19.4,-48.7],[-18.9,-49.6],[-18.5,-50.6],[-18.0,-51.6],[-17.6,-52.6],[-17.1,-53.6],[-16.7,-54.6],[-16.3,-55.6],[-16.0,-56.7],[-15.6,-57.7],[-15.3,-58.7],[-14.9,-59.8],[-14.6,-60.8],[-14.3,-61.9],[-14.1,-62.9],[-13.8,-64.0],[-13.6,-65.0],[-13.4,-66.1],[-13.2,-67.2],[-13.0,-68.3],[-12.9,-69.3],[-12.7,-70.4],[-12.6,-71.5],[-12.5,-72.6],[-12.4,-73.7],[-12.3,-74.8],[-12.3,-75.8],[-12.3,-76.9],[-12.2,-78.0],[-12.3,-79.1],[-12.3,-80.2],[-12.3,-81.3],[-12.4,-82.4],[-12.5,-83.5],[-12.6,-84.6],[-12.7,-85.6],[-12.8,-86.7],[-13.0,-87.8],[-13.9,-89.3],[-14.8,-90.9],[-15.7,-92.5],[-16.6,-94.1],[-17.3,-95.7],[-18.1,-97.3],[-18.8,-99.0],[-19.5,-100.7],[-20.1,-102.3],[-20.7,-104.1],[-21.2,-105.8],[-21.7,-107.5],[-22.1,-109.3],[-22.5,-111.0],[-22.8,-112.8],[-23.2,-114.6],[-23.4,-116.4],[-23.6,-118.1],[-23.8,-119.9],[-23.9,-121.7],[-24.0,-123.5],[-24.0,-125.4],[-24.0,-127.2],[-23.9,-129.0],[-23.8,-130.8],[-23.6,-132.6],[-23.4,-134.3],[-23.1,-136.1],[-22.8,-137.9],[-22.5,-139.7],[-22.1,-141.4],[-21.6,-143.2],[-21.1,-144.9],[-20.6,-146.6],[-20.0,-148.3],[-19.4,-150.0],[-18.7,-151.7],[-18.0,-153.4],[-17.3,-155.0],[-16.5,-156.6],[-16.4,-156.7],[-16.3,-156.8],[-16.3,-156.9],[-16.2,-157.0],[-16.1,-157.1],[-16.1,-157.2],[-16.0,-157.3],[-15.9,-157.3],[-15.9,-157.4],[-15.8,-157.5],[-15.7,-157.6],[-15.7,-157.7],[-15.6,-157.8],[-15.5,-157.9],[-15.5,-158.0],[-15.4,-158.0],[-15.3,-158.1],[-15.2,-158.2],[-15.2,-158.3],[-15.1,-158.4],[-15.0,-158.5],[-15.0,-158.5],[-14.9,-158.6],[-14.8,-158.7],[-14.7,-158.8],[-14.7,-158.9],[-14.6,-159.0],[-14.5,-159.0],[-14.4,-159.1],[-14.4,-159.2],[-14.3,-159.3],[-14.2,-159.4],[-14.1,-159.4],[-14.1,-159.5],[-14.0,-159.6],[-13.9,-159.7],[-13.8,-159.8],[-13.8,-159.8],[-13.7,-159.9],[-13.6,-160.0],[-0.0,-160],[0.0,-160],[13.6,-160.0],[13.7,-159.9],[13.8,-159.8],[13.8,-159.8],[13.9,-159.7],[14.0,-159.6],[14.1,-159.5],[14.1,-159.4],[14.2,-159.4],[14.3,-159.3],[14.4,-159.2],[14.4,-159.1],[14.5,-159.0],[14.6,-159.0],[14.7,-158.9],[14.7,-158.8],[14.8,-158.7],[14.9,-158.6],[15.0,-158.5],[15.0,-158.5],[15.1,-158.4],[15.2,-158.3],[15.2,-158.2],[15.3,-158.1],[15.4,-158.0],[15.5,-158.0],[15.5,-157.9],[15.6,-157.8],[15.7,-157.7],[15.7,-157.6],[15.8,-157.5],[15.9,-157.4],[15.9,-157.3],[16.0,-157.3],[16.1,-157.2],[16.1,-157.1],[16.2,-157.0],[16.3,-156.9],[16.3,-156.8],[16.4,-156.7],[16.5,-156.6],[17.3,-155.0],[18.0,-153.4],[18.7,-151.7],[19.4,-150.0],[20.0,-148.3],[20.6,-146.6],[21.1,-144.9],[21.6,-143.2],[22.1,-141.4],[22.5,-139.7],[22.8,-137.9],[23.1,-136.1],[23.4,-134.3],[23.6,-132.6],[23.8,-130.8],[23.9,-129.0],[24.0,-127.2],[24.0,-125.4],[24.0,-123.5],[23.9,-121.7],[23.8,-119.9],[23.6,-118.1],[23.4,-116.4],[23.2,-114.6],[22.8,-112.8],[22.5,-111.0],[22.1,-109.3],[21.7,-107.5],[21.2,-105.8],[20.7,-104.1],[20.1,-102.3],[19.5,-100.7],[18.8,-99.0],[18.1,-97.3],[17.3,-95.7],[16.6,-94.1],[15.7,-92.5],[14.8,-90.9],[13.9,-89.3],[13.0,-87.8],[12.8,-86.7],[12.7,-85.6],[12.6,-84.6],[12.5,-83.5],[12.4,-82.4],[12.3,-81.3],[12.3,-80.2],[12.3,-79.1],[12.2,-78.0],[12.3,-76.9],[12.3,-75.8],[12.3,-74.8],[12.4,-73.7],[12.5,-72.6],[12.6,-71.5],[12.7,-70.4],[12.9,-69.3],[13.0,-68.3],[13.2,-67.2],[13.4,-66.1],[13.6,-65.0],[13.8,-64.0],[14.1,-62.9],[14.3,-61.9],[14.6,-60.8],[14.9,-59.8],[15.3,-58.7],[15.6,-57.7],[16.0,-56.7],[16.3,-55.6],[16.7,-54.6],[17.1,-53.6],[17.6,-52.6],[18.0,-51.6],[18.5,-50.6],[18.9,-49.6],[19.4,-48.7],[19.9,-47.7],[20.5,-46.8],[21.0,-45.8],[20.9,-45.2],[20.7,-44.7],[20.5,-44.1],[20.4,-43.5],[20.2,-43.0],[20.0,-42.4],[19.8,-41.8],[19.6,-41.3],[19.4,-40.7],[19.2,-40.2],[19.0,-39.6],[18.8,-39.1],[18.5,-38.5],[18.3,-38.0],[18.0,-37.4],[17.8,-36.9],[17.5,-36.4],[17.3,-35.8],[17.0,-35.3],[16.7,-34.8],[16.4,-34.3],[16.1,-33.7],[15.9,-33.2],[15.6,-32.7],[15.2,-32.2],[14.9,-31.7],[14.6,-31.2],[14.3,-30.7],[13.9,-30.2],[13.6,-29.7],[13.3,-29.2],[12.9,-28.8],[12.6,-28.3],[12.2,-27.8],[11.8,-27.3],[11.5,-26.9],[11.1,-26.4],[10.7,-26.0],[10.3,-25.5],[9.9,-25.1],[10,0]],"a1m":[[-9.9,-25.1],[-10.3,-25.5],[-10.7,-26.0],[-11.1,-26.4],[-11.5,-26.9],[-11.8,-27.3],[-12.2,-27.8],[-12.6,-28.3],[-12.9,-28.8],[-13.3,-29.2],[-13.6,-29.7],[-13.9,-30.2],[-14.3,-30.7],[-14.6,-31.2],[-14.9,-31.7],[-15.2,-32.2],[-15.6,-32.7],[-15.9,-33.2],[-16.1,-33.7],[-16.4,-34.3],[-16.7,-34.8],[-17.0,-35.3],[-17.3,-35.8],[-17.5,-36.4],[-17.8,-36.9],[-18.0,-37.4],[-18.3,-38.0],[-18.5,-38.5],[-18.8,-39.1],[-19.0,-39.6],[-19.2,-40.2],[-19.4,-40.7],[-19.6,-41.3],[-19.8,-41.8],[-20.0,-42.4],[-20.2,-43.0],[-20.4,-43.5],[-20.5,-44.1],[-20.7,-44.7],[-20.9,-45.2],[-21.0,-45.8]],"a2m":[[-21.0,-45.8],[-20.5,-46.8],[-19.9,-47.7],[-19.4,-48.7],[-18.9,-49.6],[-18.5,-50.6],[-18.0,-51.6],[-17.6,-52.6],[-17.1,-53.6],[-16.7,-54.6],[-16.3,-55.6],[-16.0,-56.7],[-15.6,-57.7],[-15.3,-58.7],[-14.9,-59.8],[-14.6,-60.8],[-14.3,-61.9],[-14.1,-62.9],[-13.8,-64.0],[-13.6,-65.0],[-13.4,-66.1],[-13.2,-67.2],[-13.0,-68.3],[-12.9,-69.3],[-12.7,-70.4],[-12.6,-71.5],[-12.5,-72.6],[-12.4,-73.7],[-12.3,-74.8],[-12.3,-75.8],[-12.3,-76.9],[-12.2,-78.0],[-12.3,-79.1],[-12.3,-80.2],[-12.3,-81.3],[-12.4,-82.4],[-12.5,-83.5],[-12.6,-84.6],[-12.7,-85.6],[-12.8,-86.7],[-13.0,-87.8]],"a3m":[[-13.0,-87.8],[-13.9,-89.3],[-14.8,-90.9],[-15.7,-92.5],[-16.6,-94.1],[-17.3,-95.7],[-18.1,-97.3],[-18.8,-99.0],[-19.5,-100.7],[-20.1,-102.3],[-20.7,-104.1],[-21.2,-105.8],[-21.7,-107.5],[-22.1,-109.3],[-22.5,-111.0],[-22.8,-112.8],[-23.2,-114.6],[-23.4,-116.4],[-23.6,-118.1],[-23.8,-119.9],[-23.9,-121.7],[-24.0,-123.5],[-24.0,-125.4],[-24.0,-127.2],[-23.9,-129.0],[-23.8,-130.8],[-23.6,-132.6],[-23.4,-134.3],[-23.1,-136.1],[-22.8,-137.9],[-22.5,-139.7],[-22.1,-141.4],[-21.6,-143.2],[-21.1,-144.9],[-20.6,-146.6],[-20.0,-148.3],[-19.4,-150.0],[-18.7,-151.7],[-18.0,-153.4],[-17.3,-155.0],[-16.5,-156.6]],"a4m":[[-16.5,-156.6],[-16.4,-156.7],[-16.3,-156.8],[-16.3,-156.9],[-16.2,-157.0],[-16.1,-157.1],[-16.1,-157.2],[-16.0,-157.3],[-15.9,-157.3],[-15.9,-157.4],[-15.8,-157.5],[-15.7,-157.6],[-15.7,-157.7],[-15.6,-157.8],[-15.5,-157.9],[-15.5,-158.0],[-15.4,-158.0],[-15.3,-158.1],[-15.2,-158.2],[-15.2,-158.3],[-15.1,-158.4],[-15.0,-158.5],[-15.0,-158.5],[-14.9,-158.6],[-14.8,-158.7],[-14.7,-158.8],[-14.7,-158.9],[-14.6,-159.0],[-14.5,-159.0],[-14.4,-159.1],[-14.4,-159.2],[-14.3,-159.3],[-14.2,-159.4],[-14.1,-159.4],[-14.1,-159.5],[-14.0,-159.6],[-13.9,-159.7],[-13.8,-159.8],[-13.8,-159.8],[-13.7,-159.9],[-13.6,-160.0],[-0.0,-160]],"c":{"O1":[10,-25],"O2":[21.008451173957482,-45.8164411031874],"O3":[12.97313265463639,-87.79243735384284],"O4":[16.453617346033198,-156.62708686332533],"C2":[-26.365196078431484,-57.851270053475986],"C3":[76.2607134716202,-78.15027353544552],"C4":[-45.24310959906336,-125.24134036583123],"C5":[-3.4717391304307608,-142.66304347826505]},"r":{"R2":48.9,"R3":64.0,"R4":69.2,"R5":24.3}},VALS=G.v,CC=G.c;
+const NS="http://www.w3.org/2000/svg",svg=document.getElementById("dw"),LY={};
+["center","aux","sketch","dim","label","mark"].forEach(n=>{const g=document.createElementNS(NS,"g");svg.appendChild(g);LY[n]=g;});
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+const f0=n=>Math.round(n*10)/10;
+const pLine=(a,b)=>`M${f0(a[0])},${f0(-a[1])}L${f0(b[0])},${f0(-b[1])}`;
+const pPath=pts=>"M"+pts.map(p=>`${f0(p[0])},${f0(-p[1])}`).join("L");
+const pPoly=pts=>pPath(pts)+"Z";
+let BAG=[],cur=0,playing=false,timer=null,lastTotal=0;
+function A(pts,cls,layer,o){const e=mk("path",{d:pPath(pts),class:cls||"sketch"},LY[layer||"sketch"]);BAG.push(Object.assign({el:e,kind:"draw"},o||{}));return e;}
+function LINE(a,b,cls,layer,o){const e=mk("path",{d:pLine(a,b),class:cls||"dline"},LY[layer||"dim"]);BAG.push(Object.assign({el:e,kind:"draw"},o||{}));return e;}
+function TXT(x,y,s,cls,o){o=o||{};const e=mk("text",{x:f0(x),y:f0(-y),class:cls||"dtext"},LY.label);e.textContent=s;
+ if(o.anchor)e.setAttribute("text-anchor",o.anchor);if(o.rot)e.setAttribute("transform",`rotate(${o.rot},${f0(x)},${f0(-y)})`);
+ BAG.push({el:e,kind:"fade",dur:o.dur||260});return e;}
+function CROSS(c,s){const g=mk("g",{},LY.mark);
+ mk("path",{d:pLine([c[0]-s,c[1]],[c[0]+s,c[1]]),class:"mark"},g);
+ mk("path",{d:pLine([c[0],c[1]-s],[c[0],c[1]+s]),class:"mark"},g);
+ BAG.push({el:g,kind:"fade",dur:240});return g;}
+function RING(c){const e=mk("circle",{cx:f0(c[0]),cy:f0(-c[1]),r:"1.2",class:"ring"},LY.mark);BAG.push({el:e,kind:"ring",dur:900});return e;}
+const D2R=Math.PI/180;
+function ang(c,p){return Math.atan2(p[1]-c[1],p[0]-c[0])/D2R;}
+function arrow(tip,dir,k){k=k||1;const L=5*k,W=1.6*k;const u=[Math.cos(dir*D2R),Math.sin(dir*D2R)],n=[-u[1],u[0]];
+ const p1=[tip[0]-u[0]*L+n[0]*W/2,tip[1]-u[1]*L+n[1]*W/2],p2=[tip[0]-u[0]*L-n[0]*W/2,tip[1]-u[1]*L-n[1]*W/2];
+ const e=mk("path",{d:pPoly([tip,p1,p2]),class:"darrow"},LY.dim);BAG.push({el:e,kind:"fade",dur:180});}
+/* ---- 尺寸 ---- */
+const DIMS=[
+ {t:"v",y1:-25,y2:0,x:-16,exts:[[[0,0],[-18,0]],[[0,-25],[-18,-25]]],txt:"25",tx:-19.5,ty:-12.5,rot:-90},
+ {t:"h",x1:-10,x2:10,y:10,exts:[[[10,0],[10,12]],[[-10,0],[-10,12]]],txt:"20",tx:0,ty:13.5},
+ {t:"h",x1:-23,x2:23,y:-190,exts:[[[-23,-160],[-23,-192]],[[23,-160],[23,-192]]],txt:"Ø46",tx:0,ty:-195},
+ {t:"v",y1:-160,y2:0,x:34,exts:[[[23,-160],[37,-160]],[[10,0],[37,0]]],txt:"160",tx:39,ty:-80,rot:-90},
+ {t:"ld",p:[18,-38],elbow:[27,-32],tail:[33,-32],txt:"R20",tx:35,ty:-32,anchor:"start"},
+ {t:"ld",p:[12.5,-72],elbow:[-30,-72],tail:[-37,-72],txt:"R40",tx:-39,ty:-72,anchor:"end"},
+ {t:"ld",p:[24,-122],elbow:[-30,-118],tail:[-37,-118],txt:"R80",tx:-39,ty:-118,anchor:"end"},
+ {t:"ld",p:[17.5,-156],elbow:[27,-166],tail:[33,-166],txt:"R10",tx:35,ty:-166,anchor:"start"}
+];
+function dimGeo(){DIMS.forEach(d=>{
+ if(d.t==="h"){(d.exts||[]).forEach(e=>LINE(e[0],e[1],"dline","dim",{dur:220}));
+   LINE([d.x1,d.y],[d.x2,d.y],"dline","dim",{dur:340});arrow([d.x1,d.y],180);arrow([d.x2,d.y],0);}
+ else if(d.t==="v"){(d.exts||[]).forEach(e=>LINE(e[0],e[1],"dline","dim",{dur:220}));
+   LINE([d.x,d.y1],[d.x,d.y2],"dline","dim",{dur:340});arrow([d.x,d.y2],-90);arrow([d.x,d.y1],90);}
+ else{LINE(d.p,d.elbow,"dline","dim",{dur:260});LINE(d.elbow,d.tail,"dline","dim",{dur:160});arrow(d.p,ang(d.elbow,d.p),0.8);}
+});}
+function dimTxt(){DIMS.forEach(d=>TXT(d.tx,d.ty,d.txt,"dtext",{anchor:d.anchor||"middle",rot:d.rot||0}));}
+/* ---- 步骤 ---- */
+const STEPS=[
+{no:"01",title:"画基准线",body:`<p>画<b>竖直轴线</b>（对称线）和<b>顶部端面</b>水平线，交点即尺寸基准。</p>`,
+ keys:["瓶体左右对称：画一半再镜像","高度从顶面量起，总高 160"],
+ form:"轴线 x=0，顶面 y=0",
+ build(){A([[-40,0],[40,0]],"center","center",{dur:700,dashed:true});A([[0,10],[0,-172]],"center","center",{dur:900,dashed:true});CROSS([0,0],2.6);TXT(2.8,4,"O","clabel");}},
+{no:"02",title:"画颈部 Ø20 × 25",body:`<p>颈部直径 <b>Ø20</b>（左右各 10），高 <span class="hi">25</span>：从顶面画两条竖线，长 25。</p>`,
+ keys:["Ø20 → 半宽 10","颈部高 25"],
+ form:"Ø20：x=±10，y=0…−25",build(){
+ A([[10,0],[10,-25]],"sketch");A([[-10,0],[-10,-25]],"sketch");
+ A([[-10,0],[10,0]],"sketch","sketch",{dur:260});CROSS([10,-25],2.2);}},
+{no:"03",title:"画肩部 R20",body:`<p>肩部用 <b>R20</b> 圆弧，从颈部外缘向外张开（下摆），与腰弧相接。</p>`,
+ keys:["R20 圆弧与腰部 R40 相连","两侧对称"],
+ form:"R20：圆心在颈部外侧",build(){
+ RING(CC.C2);CROSS(CC.C2,2.2);TXT(CC.C2[0]+2.5,CC.C2[1]+2.5,"O₂","clabel");
+ A(G.a1,"sketch");A(G.a1m,"sketch");}},
+{no:"04",title:"画腰部 R40",body:`<p>腰部是向内收的<b>凹弧 R40</b>，与肩部圆弧相切，形成"喇叭—收腰"的过渡。</p>`,
+ keys:["凹弧：圆心在瓶体外部","与 R20、与 R80 两段都相切"],
+ form:"R40：凹弧，圆心 ≈(76,−78)",build(){
+ RING(CC.C3);CROSS(CC.C3,2.2);TXT(CC.C3[0]+2.5,CC.C3[1]+2.5,"O₃","clabel");
+ A(G.a2,"sketch");A(G.a2m,"sketch");}},
+{no:"05",title:"画腹部 R80",body:`<p>腹部是向外鼓的<b>凸弧 R80</b>，与腰弧相切，是瓶体最宽的地方（约 Ø48）。</p>`,
+ keys:["凸弧：圆心在瓶体内部","与底部 R10 圆角相接"],
+ form:"R80：凸弧，圆心 ≈(−45,−125)",build(){
+ RING(CC.C4);CROSS(CC.C4,2.2);TXT(CC.C4[0]+2.5,CC.C4[1]+2.5,"O₄","clabel");
+ A(G.a3,"sketch");A(G.a3m,"sketch");}},
+{no:"06",title:"画底部 Ø46 与 R10 圆角",body:`<p>底部外径 <b>Ø46</b>（半宽 23），底角用 <b>R10</b> 圆角与腹部圆弧相接，最后连成平底。</p>`,
+ keys:["底平线在 y=−160","R10 圆角同时切腹部弧与底平线"],
+ form:"Ø46 底，R10 圆角，底面 y=−160",build(){
+ A(G.a4,"sketch");A(G.a4m,"sketch");
+ A([[-13.6,-160],[13.6,-160]],"sketch","sketch",{dur:300});CROSS([23,-160],2.0);}},
+{no:"07",title:"检查轮廓（镜像补齐）",body:`<p>瓶体上下不对称、左右对称：核对左右两半是否一致，各连接处是否光滑相切。</p>`,
+ keys:["先用细线画完，再统一加深"],
+ form:"",build(){A(G.left,"sketch","sketch",{dur:600});}},
+{no:"08",title:"修剪多余线条",body:`<p>剪去辅助线，只留外轮廓；中心线保留为细点画线。</p>`,
+ keys:["相切处不能有折角"],
+ form:"",build(){BAG.push({kind:"fn",dur:100,fn:()=>{LY.aux.style.transition="opacity .8s";document.getElementById("showaux").checked=false;applyAux();}});}},
+{no:"09",title:"加深轮廓",body:`<p>用<b>粗实线</b>描深轮廓，全图线宽一致（约 0.7mm）。</p>`,
+ keys:["粗实线：可见轮廓","中心线：细点画线"],
+ form:"",build(){BAG.push({kind:"fn",dur:100,fn:()=>{svg.classList.add("deep");}});}},
+{no:"10",title:"画尺寸线",body:`<p>画尺寸界线与尺寸线：Ø20、25、Ø46、160、R20、R40、R80、R10。</p>`,
+ keys:["Ø 尺寸线过圆心","半径尺寸线沿半径方向指向圆弧"],
+ form:"",build(){dimGeo();}},
+{no:"11",title:"标注数字 · 完成",body:`<p>填数字：直径加 <b>Ø</b>、半径加 <b>R</b>；竖直尺寸字头朝左。</p>
+  <p><b>完成！</b>这题练习了：圆弧与直线相切、凹弧与凸弧相切（S 形过渡）、圆角连接。</p>`,
+ keys:["同一尺寸只注一次","数字不被图线穿过"],
+ form:"",build(){dimTxt();}}
+];
+/* ---- 引擎 ---- */
+function animateItem(it,delay,dur){const el=it.el;
+ if(it.kind==="fn"){setTimeout(it.fn,delay);return;}
+ if(it.kind==="draw"){let L=0;try{L=el.getTotalLength();}catch(e){}
+  if(!L){el.style.opacity=1;return;}
+  el.style.strokeDasharray=L;el.style.strokeDashoffset=L;
+  const a=el.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:Math.max(60,dur),delay,fill:"forwards",easing:"linear"});
+  a.onfinish=()=>{el.style.strokeDashoffset=0;if(it.dashed)el.style.strokeDasharray="";};
+ }else if(it.kind==="fade"){el.style.opacity=0;el.animate([{opacity:0},{opacity:1}],{duration:Math.max(60,dur),delay,fill:"forwards",easing:"ease-out"});}
+ else if(it.kind==="ring"){el.animate([{opacity:.9,r:"1"},{opacity:0,r:"8"}],{duration:1100,delay,iterations:2,easing:"ease-out"});}
+}
+function settle(it){const el=it.el;
+ if(it.kind==="draw"){el.style.strokeDashoffset="";el.style.strokeDasharray="";}
+ else if(it.kind==="fade")el.style.opacity=1;
+ else if(it.kind==="ring")el.style.opacity=0;
+ else if(it.kind==="fn")it.fn();}
+function playBag(items){let cursor=0,last=0,end=0;
+ items.forEach(it=>{const d=(it.dur||400),start=it.par?last:cursor;last=start;
+  if(!it.par)cursor=start+d*0.72;end=Math.max(end,start+d);animateItem(it,start,d);});return end;}
+function applyAux(){LY.aux.style.opacity=document.getElementById("showaux").checked?1:0;}
+function clearAll(){Object.values(LY).forEach(g=>{while(g.firstChild)g.removeChild(g.firstChild);});
+ LY.aux.style.transition="";svg.classList.remove("deep");BAG=[];}
+function buildStep(i,anim){BAG=[];STEPS[i-1].build();const items=BAG.slice();if(anim)lastTotal=playBag(items);else items.forEach(settle);}
+function gotoStep(n,anim){n=Math.max(1,Math.min(STEPS.length,n));if(n===cur){updateUI();return;}
+ if(n<cur||!anim){clearAll();for(let i=1;i<=n;i++)buildStep(i,anim&&i===n);cur=n;}
+ else{for(let i=cur+1;i<=n;i++)buildStep(i,anim&&i===n);cur=n;}
+ applyAux();updateUI();}
+function stop(){playing=false;if(timer){clearTimeout(timer);timer=null;}}
+function reset(){stop();clearAll();cur=0;applyAux();updateUI();}
+function updateUI(){const list=document.getElementById("steplist");
+ [...list.children].forEach((b,i)=>b.classList.toggle("active",i===cur-1));
+ const s=cur>=1?STEPS[cur-1]:null;
+ document.getElementById("stepno").textContent=s?s.no:"00";
+ document.getElementById("steptitle").textContent=s?s.title:"准备";
+ document.getElementById("stepbody").innerHTML=s?s.body:"<p>点击「播放」或「下一步」开始。</p>";
+ document.getElementById("stepkeys").innerHTML=s&&s.keys.length?"<b>作图要点</b><ul>"+s.keys.map(k=>"<li>"+k+"</li>").join("")+"</ul>":"";
+ const f=document.getElementById("stepform");if(s&&s.form){f.style.display="block";f.textContent=s.form;}else f.style.display="none";
+ document.getElementById("bar").style.width=(cur/STEPS.length*100)+"%";
+ document.getElementById("btnPrev").disabled=cur<=0;document.getElementById("btnNext").disabled=cur>=STEPS.length;
+ document.getElementById("btnPlay").textContent=playing?"⏸ 暂停":"▶ 播放";}
+function play(){if(playing){stop();updateUI();return;}
+ if(cur>=STEPS.length){clearAll();cur=0;updateUI();}
+ playing=true;updateUI();
+ const tick=()=>{if(!playing)return;if(cur>=STEPS.length){playing=false;updateUI();return;}
+  gotoStep(cur+1,true);timer=setTimeout(tick,lastTotal+650);};
+ setTimeout(tick,120);}
+(function init(){const list=document.getElementById("steplist");
+ STEPS.forEach((s,i)=>{const b=document.createElement("button");b.className="stepbtn";
+  b.innerHTML=`<span class="num">${s.no}</span><span>${s.title}</span>`;
+  b.onclick=()=>{stop();gotoStep(i+1,true);};list.appendChild(b);});
+ const tb=document.getElementById("dimtable");
+ [["Ø20","颈部直径"],["25","颈部高度"],["R20","肩部圆弧"],["R40","腰部凹弧"],
+  ["R80","腹部凸弧"],["Ø46","底部直径"],["R10","底角圆角"],["160","总高"]].forEach(([a,b])=>{
+   const d=document.createElement("div");d.className="dimrow";d.innerHTML=`<b>${a}</b><span>${b}</span>`;tb.appendChild(d);});
+ document.getElementById("btnPrev").onclick=()=>{stop();gotoStep(cur-1,false);};
+ document.getElementById("btnNext").onclick=()=>{stop();gotoStep(cur+1,true);};
+ document.getElementById("btnPlay").onclick=play;
+ document.getElementById("btnReset").onclick=reset;
+ document.getElementById("showaux").onchange=applyAux;
+ document.getElementById("btnPng").onclick=()=>{
+  const cl=svg.cloneNode(true);cl.setAttribute("width",1400);cl.setAttribute("height",644);
+  const s=new XMLSerializer().serializeToString(cl);
+  const url=URL.createObjectURL(new Blob([s],{type:"image/svg+xml;charset=utf-8"}));
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement("canvas");c.width=1400;c.height=644;
+   const x=c.getContext("2d");x.fillStyle="#fbfaf6";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+   const a=document.createElement("a");a.download="瓶体-第"+cur+"步.png";a.href=c.toDataURL("image/png");a.click();URL.revokeObjectURL(url);};
+  img.src=url;};
+ document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"){stop();gotoStep(cur+1,true);e.preventDefault();}
+  else if(e.key==="ArrowLeft"){stop();gotoStep(cur-1,false);e.preventDefault();}
+  else if(e.key===" "){play();e.preventDefault();}});
+ const q=new URLSearchParams(location.search),st=parseInt(q.get("step")||"0",10);
+ if(st>0)gotoStep(Math.min(st,STEPS.length),false);else gotoStep(1,false);
+ updateUI();applyAux();
+})();
+</script>
+</body>
+</html>
