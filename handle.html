@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>手柄 · 圆弧连接分步作图｜机械制图动态演示</title>
+<style>
+ :root{--paper:#fbfaf6;--amber:#d99a2b;--teal:#2f8f83;--dim:#3c4d63;--txt:#22303f;--muted:#6b7b8f}
+ *{box-sizing:border-box} html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%}
+ body{font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:linear-gradient(180deg,#eef2f7,#e7edf4);color:var(--txt);min-height:100vh}
+ .app{max-width:1320px;margin:0 auto;padding:14px 18px 22px}
+ header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+ header h1{font-size:20px;margin:0} header .sub{font-size:13px;color:var(--muted)}
+ .main{display:grid;grid-template-columns:minmax(300px,366px) 1fr;gap:16px;align-items:start}
+ .card{background:#fff;border-radius:14px;box-shadow:0 2px 14px rgba(24,50,80,.09);padding:13px 15px;min-width:0}
+ .col{display:flex;flex-direction:column;gap:12px;min-width:0}
+ .steplist{display:flex;flex-direction:column;gap:3px;max-height:clamp(140px,26vh,300px);overflow:auto;padding-right:4px;min-width:0}
+ .stepbtn{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:center;border:1px solid transparent;background:#f6f8fb;border-radius:8px;padding:5px 8px;cursor:pointer;font:inherit;font-size:12.8px;color:#3a4a5e;text-align:left;line-height:1.3}
+ .stepbtn:hover{background:#eef4fb;border-color:#cfe0f2}
+ .stepbtn .num{font-size:10.5px;color:#93a3b8;text-align:center}
+ .stepbtn.active{background:#e8f1fc;border-color:#9dc2e8;color:#123a63;font-weight:600}
+ h2.sec{font-size:11.5px;letter-spacing:2.4px;color:#8a9bb0;font-weight:600;margin:0 0 8px}
+ .infotitle{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+ .badge{background:#123a63;color:#fff;border-radius:7px;font-size:11.5px;padding:2px 7px}
+ .body{font-size:13px;line-height:1.72;color:#2d3d4f} .body p{margin:0 0 6px} .body .hi{color:#b03a2e;font-weight:600}
+ .keybox{background:#f3f8f5;border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:7px 10px;font-size:12.2px;line-height:1.6;color:#2e4a44}
+ .keybox ul{margin:3px 0 0;padding-left:15px}
+ .formula{font-family:Cambria,"Times New Roman",serif;background:#f8f5ec;border:1px dashed #ddd2b6;border-radius:8px;padding:5px 10px;font-size:12.6px;color:#6a5320;margin:7px 0 0}
+ .stage{padding:8px 10px 10px}
+ .svgbox{display:flex;justify-content:center;background:var(--paper);border-radius:10px}
+ svg#dw{display:block;height:calc(100vh - 286px);min-height:360px;width:auto;max-width:100%}
+ .controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:9px 3px 0}
+ button.ctl{font:inherit;font-size:12.6px;border-radius:9px;border:1px solid #cfdae7;background:#fff;color:#2b3d52;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+ button.ctl:hover{background:#f1f6fc}
+ button.ctl:disabled{opacity:.42;cursor:default}
+ button.ctl.primary{background:#123a63;border-color:#123a63;color:#fff}
+ .spacer{flex:1}
+ .progress{height:5px;background:#e4ebf3;border-radius:99px;overflow:hidden;margin:2px 4px 6px}
+ .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4f7fb8,#2f8f83);transition:width .45s}
+ .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.2px;color:#4a5c72;cursor:pointer}
+ .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.6px;color:#5b6b7f;padding:5px 6px 0}
+ .legend i{display:inline-block;width:20px;border-top:3px solid #16283f;vertical-align:middle;margin-right:4px}
+ .legend i.c{border-top:1.5px dashed #8fb0d6} .legend i.a{border-top:1.5px dashed #d99a2b} .legend i.d{border-top:1.5px solid #3c4d63}
+ .hint{font-size:11.8px;color:var(--muted);padding:6px 6px 0;line-height:1.7}
+ .dimtable{display:grid;grid-template-columns:1fr 1fr;gap:3px 7px;font-size:11.8px}
+ .dimrow{display:flex;gap:5px;padding:2px 4px;border-radius:6px;background:#f7f9fc}
+ .dimrow b{color:#123a63;font-family:Cambria,serif;min-width:40px}
+ .dimrow span{color:#5b6b7f}
+ .center{stroke:#8fb0d6;stroke-width:.5;fill:none;stroke-dasharray:9 2.5 1.2 2.5}
+ .aux{stroke:#d99a2b;stroke-width:.42;fill:none;stroke-dasharray:3.2 2.4}
+ .sketch{stroke:#2c4058;stroke-width:1.05;fill:none;stroke-linecap:round;stroke-linejoin:round}
+ .mark{stroke:#c8412f;stroke-width:.5;fill:none;stroke-linecap:round}
+ .ring{stroke:#e0703c;stroke-width:.55;fill:none}
+ .dline{stroke:#3c4d63;stroke-width:.42;fill:none;stroke-linecap:round}
+ .darrow{fill:#3c4d63}
+ .dtext{fill:#202f42;font-family:Cambria,"Times New Roman",serif;font-size:6.4px;text-anchor:middle;dominant-baseline:middle}
+ .clabel{fill:#a8452f;font-family:Cambria,serif;font-size:4.6px;dominant-baseline:middle}
+ #dw.deep .sketch{stroke-width:1.9;stroke:#08131f}
+ @media (max-width:920px){
+  .main{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .stage{order:-1} .spacer{display:none}
+  .steplist{max-height:none;flex-direction:row;overflow-x:auto;padding-bottom:6px}
+  .stepbtn{flex:0 0 auto;font-size:12px;padding:5px 8px}
+  svg#dw{height:auto;width:min(100%,calc(58vh*1.9));margin:0 auto}
+  .controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .controls button.ctl{width:100%;justify-content:center;padding:8px 4px;font-size:12px}
+  header h1{font-size:17px}
+ }
+ @media (max-width:400px){ .controls{grid-template-columns:repeat(2,minmax(0,1fr))} }
+</style>
+</head>
+<body>
+<div class="app">
+ <header><h1>手柄 · 圆弧连接分步作图</h1>
+  <span class="sub">Ø20 杆 · Ø12 内孔 · R42 颈 · R60 鼓包 · Ø30 · SR7 球头</span></header>
+ <div class="main">
+  <div class="col">
+   <div class="card"><h2 class="sec">作 图 步 骤</h2><div class="steplist" id="steplist"></div></div>
+   <div class="card">
+    <div class="infotitle"><span class="badge" id="stepno">00</span><b id="steptitle">准备</b></div>
+    <div class="body" id="stepbody"><p>点击「播放」或「下一步」开始。</p></div>
+    <div class="keybox" id="stepkeys"></div>
+    <div class="formula" id="stepform" style="display:none"></div>
+   </div>
+   <div class="card"><h2 class="sec">尺 寸 含 义</h2><div class="dimtable" id="dimtable"></div></div>
+  </div>
+  <div class="card stage">
+   <div class="progress"><i id="bar"></i></div>
+   <div class="svgbox">
+    <svg id="dw" viewBox="-34 -46 200 92" xmlns="http://www.w3.org/2000/svg" width="1000" height="460">
+     <style>
+      .center{stroke:#8fb0d6;stroke-width:.5;fill:none;stroke-dasharray:9 2.5 1.2 2.5}
+      .aux{stroke:#d99a2b;stroke-width:.42;fill:none;stroke-dasharray:3.2 2.4}
+      .sketch{stroke:#2c4058;stroke-width:1.05;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .mark{stroke:#c8412f;stroke-width:.5;fill:none;stroke-linecap:round}
+      .ring{stroke:#e0703c;stroke-width:.55;fill:none}
+      .dline{stroke:#3c4d63;stroke-width:.42;fill:none;stroke-linecap:round}
+      .darrow{fill:#3c4d63}
+      .dtext{fill:#202f42;font-family:Cambria,'Times New Roman',serif;font-size:6.4px;text-anchor:middle;dominant-baseline:middle}
+      .clabel{fill:#a8452f;font-family:Cambria,serif;font-size:4.6px;dominant-baseline:middle}
+      #dw.deep .sketch{stroke-width:1.9;stroke:#08131f}
+     </style>
+     <defs>
+      <pattern id="g5" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="#eef2f6" stroke-width=".5"/></pattern>
+      <pattern id="g25" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="url(#g5)"/><path d="M50 0H0V50" fill="none" stroke="#e1e9f2" stroke-width=".7"/></pattern>
+     </defs>
+     <rect x="-34" y="-46" width="200" height="92" fill="url(#g25)"/>
+    </svg>
+   </div>
+   <div class="controls">
+    <button class="ctl" id="btnPrev">◀ 上一步</button>
+    <button class="ctl primary" id="btnPlay">▶ 播放</button>
+    <button class="ctl" id="btnNext">下一步 ▶</button>
+    <button class="ctl" id="btnReset">↺ 重来</button>
+    <span class="spacer"></span>
+    <label class="chk"><input type="checkbox" id="showaux" checked> 辅助线</label>
+    <button class="ctl" id="btnPng">导出 PNG</button>
+   </div>
+   <div class="legend"><span><i></i>粗实线：轮廓</span><span><i class="c"></i>点画线：中心线</span><span><i class="a"></i>虚线：作图辅助</span><span><i class="d"></i>细实线：尺寸</span></div>
+   <div class="hint">键盘 ← / → / 空格 · 点击左侧步骤可跳转</div>
+  </div>
+ </div>
+</div>
+<script>
+"use strict";
+const G={"rod":[[0,10.0],[38.0,10.0]],"neck":[[38.0,10.0],[38.8,9.7],[39.7,9.5],[40.6,9.2],[41.4,9.0],[42.3,8.8],[43.2,8.6],[44.1,8.5],[44.9,8.3],[45.8,8.2],[46.7,8.1],[47.6,8.0],[48.5,7.9],[49.4,7.9],[50.3,7.8],[51.2,7.8],[52.1,7.8],[53.0,7.8],[53.8,7.9],[54.7,7.9],[55.6,8.0],[56.5,8.1],[57.4,8.2],[58.3,8.4],[59.2,8.5],[60.0,8.7],[60.9,8.9],[61.8,9.1],[62.6,9.3],[63.5,9.6],[64.4,9.9],[65.2,10.1],[66.0,10.5],[66.9,10.8]],"swell":[[66.9,10.8],[68.1,11.2],[69.3,11.7],[70.5,12.1],[71.7,12.4],[72.9,12.8],[74.1,13.1],[75.4,13.4],[76.6,13.7],[77.9,14.0],[79.1,14.2],[80.4,14.4],[81.6,14.5],[82.9,14.7],[84.2,14.8],[85.5,14.9],[86.7,15.0],[88.0,15.0],[89.3,15.0],[90.5,15.0],[91.8,14.9],[93.1,14.9],[94.4,14.8],[95.6,14.6],[96.9,14.5],[98.2,14.3],[99.4,14.1],[100.7,13.9],[101.9,13.6],[103.2,13.3],[104.4,13.0],[105.6,12.7],[106.8,12.3],[108.0,11.9],[109.2,11.5],[110.4,11.0],[111.6,10.6],[112.8,10.1],[114.0,9.6],[115.1,9.0],[116.3,8.4],[117.4,7.9],[118.5,7.2],[119.6,6.6],[120.7,5.9]],"end":[[120.7,5.9],[120.8,5.9],[120.9,5.8],[121.1,5.7],[121.2,5.6],[121.3,5.5],[121.4,5.4],[121.5,5.3],[121.6,5.2],[121.8,5.1],[121.9,5.0],[122.0,4.9],[122.1,4.8],[122.2,4.7],[122.3,4.6],[122.4,4.5],[122.5,4.4],[122.6,4.3],[122.6,4.1],[122.7,4.0],[122.8,3.9],[122.9,3.8],[123.0,3.7],[123.0,3.5],[123.1,3.4],[123.2,3.3],[123.3,3.1],[123.3,3.0],[123.4,2.9],[123.4,2.7],[123.5,2.6],[123.6,2.5],[123.6,2.3],[123.7,2.2],[123.7,2.0],[123.7,1.9],[123.8,1.8],[123.8,1.6],[123.8,1.5],[123.9,1.3],[123.9,1.2],[123.9,1.0],[123.9,0.9],[124.0,0.7],[124.0,0.6],[124.0,0.4],[124.0,0.3],[124.0,0.1],[124.0,-0.0]],"half":[[0,10.0],[38.0,10.0],[38.8,9.7],[39.7,9.5],[40.6,9.2],[41.4,9.0],[42.3,8.8],[43.2,8.6],[44.1,8.5],[44.9,8.3],[45.8,8.2],[46.7,8.1],[47.6,8.0],[48.5,7.9],[49.4,7.9],[50.3,7.8],[51.2,7.8],[52.1,7.8],[53.0,7.8],[53.8,7.9],[54.7,7.9],[55.6,8.0],[56.5,8.1],[57.4,8.2],[58.3,8.4],[59.2,8.5],[60.0,8.7],[60.9,8.9],[61.8,9.1],[62.6,9.3],[63.5,9.6],[64.4,9.9],[65.2,10.1],[66.0,10.5],[66.9,10.8],[68.1,11.2],[69.3,11.7],[70.5,12.1],[71.7,12.4],[72.9,12.8],[74.1,13.1],[75.4,13.4],[76.6,13.7],[77.9,14.0],[79.1,14.2],[80.4,14.4],[81.6,14.5],[82.9,14.7],[84.2,14.8],[85.5,14.9],[86.7,15.0],[88.0,15.0],[89.3,15.0],[90.5,15.0],[91.8,14.9],[93.1,14.9],[94.4,14.8],[95.6,14.6],[96.9,14.5],[98.2,14.3],[99.4,14.1],[100.7,13.9],[101.9,13.6],[103.2,13.3],[104.4,13.0],[105.6,12.7],[106.8,12.3],[108.0,11.9],[109.2,11.5],[110.4,11.0],[111.6,10.6],[112.8,10.1],[114.0,9.6],[115.1,9.0],[116.3,8.4],[117.4,7.9],[118.5,7.2],[119.6,6.6],[120.7,5.9],[120.8,5.9],[120.9,5.8],[121.1,5.7],[121.2,5.6],[121.3,5.5],[121.4,5.4],[121.5,5.3],[121.6,5.2],[121.8,5.1],[121.9,5.0],[122.0,4.9],[122.1,4.8],[122.2,4.7],[122.3,4.6],[122.4,4.5],[122.5,4.4],[122.6,4.3],[122.6,4.1],[122.7,4.0],[122.8,3.9],[122.9,3.8],[123.0,3.7],[123.0,3.5],[123.1,3.4],[123.2,3.3],[123.3,3.1],[123.3,3.0],[123.4,2.9],[123.4,2.7],[123.5,2.6],[123.6,2.5],[123.6,2.3],[123.7,2.2],[123.7,2.0],[123.7,1.9],[123.8,1.8],[123.8,1.6],[123.8,1.5],[123.9,1.3],[123.9,1.2],[123.9,1.0],[123.9,0.9],[124.0,0.7],[124.0,0.6],[124.0,0.4],[124.0,0.3],[124.0,0.1],[124.0,-0.0]],"hole":[[0,6.0],[22.0,6.0],[22.0,-6.0],[0,-6.0]],"lower":[[124.0,0.0],[124.0,-0.1],[124.0,-0.3],[124.0,-0.4],[124.0,-0.6],[124.0,-0.7],[123.9,-0.9],[123.9,-1.0],[123.9,-1.2],[123.9,-1.3],[123.8,-1.5],[123.8,-1.6],[123.8,-1.8],[123.7,-1.9],[123.7,-2.0],[123.7,-2.2],[123.6,-2.3],[123.6,-2.5],[123.5,-2.6],[123.4,-2.7],[123.4,-2.9],[123.3,-3.0],[123.3,-3.1],[123.2,-3.3],[123.1,-3.4],[123.0,-3.5],[123.0,-3.7],[122.9,-3.8],[122.8,-3.9],[122.7,-4.0],[122.6,-4.1],[122.6,-4.3],[122.5,-4.4],[122.4,-4.5],[122.3,-4.6],[122.2,-4.7],[122.1,-4.8],[122.0,-4.9],[121.9,-5.0],[121.8,-5.1],[121.6,-5.2],[121.5,-5.3],[121.4,-5.4],[121.3,-5.5],[121.2,-5.6],[121.1,-5.7],[120.9,-5.8],[120.8,-5.9],[120.7,-5.9],[119.6,-6.6],[118.5,-7.2],[117.4,-7.9],[116.3,-8.4],[115.1,-9.0],[114.0,-9.6],[112.8,-10.1],[111.6,-10.6],[110.4,-11.0],[109.2,-11.5],[108.0,-11.9],[106.8,-12.3],[105.6,-12.7],[104.4,-13.0],[103.2,-13.3],[101.9,-13.6],[100.7,-13.9],[99.4,-14.1],[98.2,-14.3],[96.9,-14.5],[95.6,-14.6],[94.4,-14.8],[93.1,-14.9],[91.8,-14.9],[90.5,-15.0],[89.3,-15.0],[88.0,-15.0],[86.7,-15.0],[85.5,-14.9],[84.2,-14.8],[82.9,-14.7],[81.6,-14.5],[80.4,-14.4],[79.1,-14.2],[77.9,-14.0],[76.6,-13.7],[75.4,-13.4],[74.1,-13.1],[72.9,-12.8],[71.7,-12.4],[70.5,-12.1],[69.3,-11.7],[68.1,-11.2],[66.9,-10.8],[66.0,-10.5],[65.2,-10.1],[64.4,-9.9],[63.5,-9.6],[62.6,-9.3],[61.8,-9.1],[60.9,-8.9],[60.0,-8.7],[59.2,-8.5],[58.3,-8.4],[57.4,-8.2],[56.5,-8.1],[55.6,-8.0],[54.7,-7.9],[53.8,-7.9],[53.0,-7.8],[52.1,-7.8],[51.2,-7.8],[50.3,-7.8],[49.4,-7.9],[48.5,-7.9],[47.6,-8.0],[46.7,-8.1],[45.8,-8.2],[44.9,-8.3],[44.1,-8.5],[43.2,-8.6],[42.3,-8.8],[41.4,-9.0],[40.6,-9.2],[39.7,-9.5],[38.8,-9.7],[38.0,-10.0],[0,-10.0]],"outline":[[0,10.0],[38.0,10.0],[38.8,9.7],[39.7,9.5],[40.6,9.2],[41.4,9.0],[42.3,8.8],[43.2,8.6],[44.1,8.5],[44.9,8.3],[45.8,8.2],[46.7,8.1],[47.6,8.0],[48.5,7.9],[49.4,7.9],[50.3,7.8],[51.2,7.8],[52.1,7.8],[53.0,7.8],[53.8,7.9],[54.7,7.9],[55.6,8.0],[56.5,8.1],[57.4,8.2],[58.3,8.4],[59.2,8.5],[60.0,8.7],[60.9,8.9],[61.8,9.1],[62.6,9.3],[63.5,9.6],[64.4,9.9],[65.2,10.1],[66.0,10.5],[66.9,10.8],[68.1,11.2],[69.3,11.7],[70.5,12.1],[71.7,12.4],[72.9,12.8],[74.1,13.1],[75.4,13.4],[76.6,13.7],[77.9,14.0],[79.1,14.2],[80.4,14.4],[81.6,14.5],[82.9,14.7],[84.2,14.8],[85.5,14.9],[86.7,15.0],[88.0,15.0],[89.3,15.0],[90.5,15.0],[91.8,14.9],[93.1,14.9],[94.4,14.8],[95.6,14.6],[96.9,14.5],[98.2,14.3],[99.4,14.1],[100.7,13.9],[101.9,13.6],[103.2,13.3],[104.4,13.0],[105.6,12.7],[106.8,12.3],[108.0,11.9],[109.2,11.5],[110.4,11.0],[111.6,10.6],[112.8,10.1],[114.0,9.6],[115.1,9.0],[116.3,8.4],[117.4,7.9],[118.5,7.2],[119.6,6.6],[120.7,5.9],[120.8,5.9],[120.9,5.8],[121.1,5.7],[121.2,5.6],[121.3,5.5],[121.4,5.4],[121.5,5.3],[121.6,5.2],[121.8,5.1],[121.9,5.0],[122.0,4.9],[122.1,4.8],[122.2,4.7],[122.3,4.6],[122.4,4.5],[122.5,4.4],[122.6,4.3],[122.6,4.1],[122.7,4.0],[122.8,3.9],[122.9,3.8],[123.0,3.7],[123.0,3.5],[123.1,3.4],[123.2,3.3],[123.3,3.1],[123.3,3.0],[123.4,2.9],[123.4,2.7],[123.5,2.6],[123.6,2.5],[123.6,2.3],[123.7,2.2],[123.7,2.0],[123.7,1.9],[123.8,1.8],[123.8,1.6],[123.8,1.5],[123.9,1.3],[123.9,1.2],[123.9,1.0],[123.9,0.9],[124.0,0.7],[124.0,0.6],[124.0,0.4],[124.0,0.3],[124.0,0.1],[124.0,-0.0],[124.0,0.0],[124.0,-0.1],[124.0,-0.3],[124.0,-0.4],[124.0,-0.6],[124.0,-0.7],[123.9,-0.9],[123.9,-1.0],[123.9,-1.2],[123.9,-1.3],[123.8,-1.5],[123.8,-1.6],[123.8,-1.8],[123.7,-1.9],[123.7,-2.0],[123.7,-2.2],[123.6,-2.3],[123.6,-2.5],[123.5,-2.6],[123.4,-2.7],[123.4,-2.9],[123.3,-3.0],[123.3,-3.1],[123.2,-3.3],[123.1,-3.4],[123.0,-3.5],[123.0,-3.7],[122.9,-3.8],[122.8,-3.9],[122.7,-4.0],[122.6,-4.1],[122.6,-4.3],[122.5,-4.4],[122.4,-4.5],[122.3,-4.6],[122.2,-4.7],[122.1,-4.8],[122.0,-4.9],[121.9,-5.0],[121.8,-5.1],[121.6,-5.2],[121.5,-5.3],[121.4,-5.4],[121.3,-5.5],[121.2,-5.6],[121.1,-5.7],[120.9,-5.8],[120.8,-5.9],[120.7,-5.9],[119.6,-6.6],[118.5,-7.2],[117.4,-7.9],[116.3,-8.4],[115.1,-9.0],[114.0,-9.6],[112.8,-10.1],[111.6,-10.6],[110.4,-11.0],[109.2,-11.5],[108.0,-11.9],[106.8,-12.3],[105.6,-12.7],[104.4,-13.0],[103.2,-13.3],[101.9,-13.6],[100.7,-13.9],[99.4,-14.1],[98.2,-14.3],[96.9,-14.5],[95.6,-14.6],[94.4,-14.8],[93.1,-14.9],[91.8,-14.9],[90.5,-15.0],[89.3,-15.0],[88.0,-15.0],[86.7,-15.0],[85.5,-14.9],[84.2,-14.8],[82.9,-14.7],[81.6,-14.5],[80.4,-14.4],[79.1,-14.2],[77.9,-14.0],[76.6,-13.7],[75.4,-13.4],[74.1,-13.1],[72.9,-12.8],[71.7,-12.4],[70.5,-12.1],[69.3,-11.7],[68.1,-11.2],[66.9,-10.8],[66.0,-10.5],[65.2,-10.1],[64.4,-9.9],[63.5,-9.6],[62.6,-9.3],[61.8,-9.1],[60.9,-8.9],[60.0,-8.7],[59.2,-8.5],[58.3,-8.4],[57.4,-8.2],[56.5,-8.1],[55.6,-8.0],[54.7,-7.9],[53.8,-7.9],[53.0,-7.8],[52.1,-7.8],[51.2,-7.8],[50.3,-7.8],[49.4,-7.9],[48.5,-7.9],[47.6,-8.0],[46.7,-8.1],[45.8,-8.2],[44.9,-8.3],[44.1,-8.5],[43.2,-8.6],[42.3,-8.8],[41.4,-9.0],[40.6,-9.2],[39.7,-9.5],[38.8,-9.7],[38.0,-10.0],[0,-10.0]],"loc_end":[[117.0,53.0],[115.9,53.0],[114.8,53.0],[113.7,52.9],[112.6,52.8],[111.5,52.7],[110.4,52.6],[109.3,52.4],[108.2,52.3],[107.1,52.1],[106.0,51.8],[104.9,51.6],[103.8,51.3],[102.7,51.0],[101.7,50.7],[100.6,50.4],[99.6,50.1],[98.5,49.7],[97.5,49.3],[96.5,48.9],[95.4,48.4],[94.4,48.0],[93.4,47.5],[92.4,47.0],[91.5,46.4],[90.5,45.9],[89.5,45.3],[88.6,44.7],[87.7,44.1],[86.8,43.5],[85.8,42.9],[85.0,42.2],[84.1,41.5],[83.2,40.8],[82.4,40.1],[81.5,39.4],[80.7,38.6],[79.9,37.9],[79.1,37.1],[78.4,36.3],[77.6,35.5],[76.9,34.6],[76.2,33.8],[75.5,32.9],[74.8,32.0],[74.1,31.2],[73.5,30.2],[72.9,29.3],[72.3,28.4],[71.7,27.5],[71.1,26.5]],"loc_neck":[[9.9,19.4],[11.3,21.1],[12.7,22.7],[14.1,24.3],[15.6,25.8],[17.1,27.3],[18.6,28.8],[20.2,30.3],[21.8,31.7],[23.4,33.1],[25.0,34.4],[26.7,35.8],[28.4,37.1],[30.1,38.3],[31.9,39.5],[33.7,40.7],[35.5,41.8],[37.3,42.9],[39.2,44.0],[41.1,45.0],[42.9,46.0],[44.9,47.0],[46.8,47.9],[48.8,48.7],[50.7,49.5],[52.7,50.3],[54.7,51.1],[56.7,51.8],[58.8,52.4],[60.8,53.0],[62.9,53.6],[64.9,54.1],[67.0,54.6],[69.1,55.0],[71.2,55.4],[73.3,55.8],[75.4,56.1],[77.6,56.4],[79.7,56.6],[81.8,56.7],[83.9,56.9]],"c":{"O":[0,0],"A":[38.0,10.0],"C2":[51.38383323753939,49.81046354753654],"C":[89.0,-45.0],"XS":[117.0,0],"Tne":[66.87284308090553,10.77086091031562],"Tsw":[66.87284308090553,10.770860910315612],"TE":[120.69811320754717,5.943396226415096]},"v":{"R_ROD":10.0,"R_HOLE":6.0,"ROD_X":38.0,"HOLE_D":22.0,"RSW":60.0,"MAXR":15.0,"REND":7.0,"XS":117.0,"RN":42.0,"TOTAL":124.0}},VALS=G.v,CC=G.c;
+const NS="http://www.w3.org/2000/svg",svg=document.getElementById("dw"),LY={};
+["center","aux","sketch","dim","label","mark"].forEach(n=>{const g=document.createElementNS(NS,"g");svg.appendChild(g);LY[n]=g;});
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+const f0=n=>Math.round(n*10)/10;
+const pLine=(a,b)=>`M${f0(a[0])},${f0(-a[1])}L${f0(b[0])},${f0(-b[1])}`;
+const pPath=pts=>"M"+pts.map(p=>`${f0(p[0])},${f0(-p[1])}`).join("L");
+const pPoly=pts=>pPath(pts)+"Z";
+let BAG=[],cur=0,playing=false,timer=null,lastTotal=0;
+function A(pts,cls,layer,o){const e=mk("path",{d:pPath(pts),class:cls||"sketch"},LY[layer||"sketch"]);BAG.push(Object.assign({el:e,kind:"draw"},o||{}));return e;}
+function LINE(a,b,cls,layer,o){const e=mk("path",{d:pLine(a,b),class:cls||"dline"},LY[layer||"dim"]);BAG.push(Object.assign({el:e,kind:"draw"},o||{}));return e;}
+function TXT(x,y,s,cls,o){o=o||{};const e=mk("text",{x:f0(x),y:f0(-y),class:cls||"dtext"},LY.label);e.textContent=s;
+ if(o.anchor)e.setAttribute("text-anchor",o.anchor);if(o.rot)e.setAttribute("transform",`rotate(${o.rot},${f0(x)},${f0(-y)})`);
+ BAG.push({el:e,kind:"fade",dur:o.dur||260});return e;}
+function CROSS(c,s){const g=mk("g",{},LY.mark);
+ mk("path",{d:pLine([c[0]-s,c[1]],[c[0]+s,c[1]]),class:"mark"},g);
+ mk("path",{d:pLine([c[0],c[1]-s],[c[0],c[1]+s]),class:"mark"},g);
+ BAG.push({el:g,kind:"fade",dur:240});return g;}
+function RING(c){const e=mk("circle",{cx:f0(c[0]),cy:f0(-c[1]),r:"1.2",class:"ring"},LY.mark);BAG.push({el:e,kind:"ring",dur:900});return e;}
+const D2R=Math.PI/180;
+function ang(c,p){return Math.atan2(p[1]-c[1],p[0]-c[0])/D2R;}
+function arrow(tip,dir,k){k=k||1;const L=5*k,W=1.6*k;const u=[Math.cos(dir*D2R),Math.sin(dir*D2R)],n=[-u[1],u[0]];
+ const p1=[tip[0]-u[0]*L+n[0]*W/2,tip[1]-u[1]*L+n[1]*W/2],p2=[tip[0]-u[0]*L-n[0]*W/2,tip[1]-u[1]*L-n[1]*W/2];
+ const e=mk("path",{d:pPoly([tip,p1,p2]),class:"darrow"},LY.dim);BAG.push({el:e,kind:"fade",dur:180});}
+/* ---- 尺寸 ---- */
+const DIMS=[
+ {t:"v",y1:-10,y2:10,x:-12,exts:[[[0,10],[-14,10]],[[0,-10],[-14,-10]]],txt:"Ø20",tx:-15.5,ty:0,rot:-90},
+ {t:"v",y1:-6,y2:6,x:-4,exts:[[[0,6],[-6,6]],[[0,-6],[-6,-6]]],txt:"Ø12",tx:-7.5,ty:0,rot:-90},
+ {t:"h",x1:0,x2:22,y:20,exts:[[[0,6],[0,22]],[[22,6],[22,22]]],txt:"22",tx:11,ty:23.5},
+ {t:"h",x1:22,x2:38,y:20,exts:[[[38,10],[38,22]]],txt:"16",tx:30,ty:23.5},
+ {t:"ld",p:[VALS.XS+7*Math.cos(-30*D2R),7*Math.sin(-30*D2R)],elbow:[130,-18],tail:[142,-18],txt:"SR7",tx:150,ty:-18,anchor:"start"},
+ {t:"ld",p:[CC.C[0],VALS.MAXR],elbow:[96,28],tail:[110,28],txt:"R60",tx:118,ty:28,anchor:"start"},
+ {t:"ld",p:CC.Tne,elbow:[70,22],tail:[80,22],txt:"R42",tx:88,ty:22,anchor:"start"},
+ {t:"v",y1:-15,y2:15,x:132,exts:[[[124,0],[136,0]]],txt:"Ø30",tx:137,ty:0,rot:-90},
+ {t:"h",x1:0,x2:117,y:-34,txt:"117",tx:58.5,ty:-37},
+ {t:"h",x1:0,x2:124,y:-28,txt:"124",tx:62,ty:-25.5}
+];
+function dimGeo(){DIMS.forEach(d=>{
+ if(d.t==="h"){(d.exts||[]).forEach(e=>LINE(e[0],e[1],"dline","dim",{dur:220}));
+   LINE([d.x1,d.y],[d.x2,d.y],"dline","dim",{dur:340});arrow([d.x1,d.y],180);arrow([d.x2,d.y],0);}
+ else if(d.t==="v"){(d.exts||[]).forEach(e=>LINE(e[0],e[1],"dline","dim",{dur:220}));
+   LINE([d.x,d.y1],[d.x,d.y2],"dline","dim",{dur:340});arrow([d.x,d.y2],-90);arrow([d.x,d.y1],90);}
+ else{LINE(d.p,d.elbow,"dline","dim",{dur:260});LINE(d.elbow,d.tail,"dline","dim",{dur:160});arrow(d.p,ang(d.elbow,d.p),0.8);}
+});}
+function dimTxt(){DIMS.forEach(d=>TXT(d.tx,d.ty,d.txt,"dtext",{anchor:d.anchor||"middle",rot:d.rot||0}));}
+/* ---- 步骤 ---- */
+const STEPS=[
+{no:"01",title:"画基准线",body:`<p>画<b>水平轴线</b>（对称线）和<b>左端面</b>竖直线，两者交点为尺寸基准。</p>`,
+ keys:["手柄上下对称，只需画一半再镜像","长度方向基准：左端面；高度方向基准：轴线"],
+ form:"轴线 y=0，左端面 x=0",
+ build(){A([[-6,0],[140,0]],"center","center",{dur:700,dashed:true});A([[0,24],[0,-24]],"center","center",{dur:600,dashed:true});CROSS([0,0],2.4);TXT(2.6,3.4,"O","clabel");}},
+{no:"02",title:"画杆部 Ø20（长 38）",body:`<p>杆部直径 <b>Ø20</b>（上下各 10），长 <span class="hi">38</span>：从 x=0 画到 x=38。</p>`,
+ keys:["Ø20 → 半 10","杆长 38（原题 22+16 的分段标注）"],
+ form:"Ø20：y=±10，x=0…38",build(){
+ A(G.rod,"sketch");A(G.lower._rod||G.rod.map(p=>[p[0],-p[1]]),"sketch");
+ LINE([0,-10],[0,10],"sketch","sketch",{dur:300});CROSS([38,10],2.2);}},
+{no:"03",title:"画内孔 Ø12 × 22",body:`<p>左端内孔直径 <b>Ø12</b>、深 <span class="hi">22</span>：画一个矩形（上下各 6，从 x=0 到 22）。</p>`,
+ keys:["内孔用细实线画","孔底是直线，不是圆弧"],form:"Ø12：y=±6，x=0…22",build(){
+ A(G.hole,"sketch");A([G.hole[3],G.hole[0]],"sketch","sketch",{dur:160});}},
+{no:"04",title:"画右端球头 SR7",body:`<p>右端是 <b>SR7</b> 圆头，圆心在轴线上、距左端面 <span class="hi">117</span>：圆心 (117, 0)，半径 7。</p>`,
+ keys:["SR7 圆心在轴线上","球头最右点 x = 117+7 = 124"],
+ form:"圆心 (117,0)，R=7，最右 124",build(){
+ RING([117,0]);CROSS([117,0],2.4);TXT(119,3.4,"O1","clabel");
+ const pts=[];for(let i=0;i<=48;i++){const a=(-90+180*i/48)*D2R;pts.push([117+7*Math.cos(a),7*Math.sin(a)]);}
+ A(pts,"sketch");}},
+{no:"05",title:"求鼓包圆心 O₂，画 R60",body:`<p>鼓包 <b>R60</b>：最高点约 <span class="hi">Ø30</span>（y=15），所以圆心 O₂ 在 y = 15−60 = <b>−45</b>；又要与 SR7 <b>内切</b>，圆心距 = 60−7 = <b>53</b>。</p>
+  <p>以 SR7 圆心为心、R53 画弧，与 y=−45 交于 O₂ ≈ (89, −45)。</p>`,
+ keys:["内切：圆心距 = R₁−R₂","y=15−60=−45 定圆心高度","再用 R53 弧定圆心横向位置"],
+ form:"O₂ = (89, −45)，R=60",build(){
+ A(G.loc_end,"aux","aux",{dur:480});RING(CC.C);CROSS(CC.C,2.4);TXT(92, -40.5,"O2","clabel");
+ A(G.swell,"sketch");A(G.swell.map(p=>[p[0],-p[1]]).reverse(),"sketch");}},
+{no:"06",title:"求颈部圆心 O₃，画 R42",body:`<p>颈部 <b>R42</b>：一端与杆部顶线相切于 A=(38, 10)，另一端与鼓包 R60 <b>外切</b>（圆心距 = 42+60 = <b>102</b>）。</p>
+  <p>以 A 为心 R42、以 O₂ 为心 R102 画弧，交点即 O₃ ≈ (51.4, 49.8)。</p>`,
+ keys:["外切：圆心距 = R₁+R₂","圆弧与直线相切：圆心到直线距离 = R"],
+ form:"O₃ ≈ (51.4, 49.8)，R=42",build(){
+ A(G.loc_neck,"aux","aux",{dur:520});RING(CC.C2);CROSS(CC.C2,2.4);TXT(55,53.5,"O3","clabel");
+ A(G.neck,"sketch");A(G.neck.map(p=>[p[0],-p[1]]).reverse(),"sketch");}},
+{no:"07",title:"画下半部分（镜像）",body:`<p>手柄上下完全对称：把上半部分轮廓关于轴线镜像，就得到下半部分。</p>`,
+ keys:["手工绘图用分规量取，CAD 用 MIRROR 命令","镜像后检查上下是否对称"],
+ form:"",build(){
+ A(G.lower,"sketch");}},
+{no:"08",title:"修剪多余线条",body:`<p>剪掉多画的辅助部分，只保留闭合轮廓；检查各连接处是否光滑（相切处不能有折角）。</p>`,
+ keys:["先修剪再加深"],
+ form:"",build(){BAG.push({kind:"fn",dur:100,fn:()=>{LY.aux.style.transition="opacity .8s";document.getElementById("showaux").checked=false;applyAux();}});}},
+{no:"09",title:"加深轮廓",body:`<p>用<b>粗实线</b>描深可见轮廓；中心线保持细点画线；内孔用细实线。</p>`,
+ keys:["粗实线宽度 b≈0.7mm，全图一致"],
+ form:"",build(){BAG.push({kind:"fn",dur:100,fn:()=>{svg.classList.add("deep");}});}},
+{no:"10",title:"画尺寸线",body:`<p>画尺寸界线与尺寸线：Ø20、Ø12、22、38、117、124、R42、R60、SR7、Ø30。尺寸线与被注线段平行，箭头尖端顶住界线。</p>`,
+ keys:["Ø 类尺寸线过圆心","半径尺寸线指向圆心方向"],
+ form:"",build(){dimGeo();}},
+{no:"11",title:"标注数字 · 完成",body:`<p>填写数字：直径加 <b>Ø</b>、半径加 <b>R</b>、球面半径加 <b>SR</b>；竖直尺寸字头朝左。</p>
+  <p><b>完成！</b>这张手柄综合练习了：与直线相切、与圆弧外切、与圆弧内切三种连接。</p>`,
+ keys:["同一尺寸只注一次","数字不能被图线穿过"],
+ form:"",build(){dimTxt();}}
+];
+/* ---- 引擎 ---- */
+function animateItem(it,delay,dur){const el=it.el;
+ if(it.kind==="fn"){setTimeout(it.fn,delay);return;}
+ if(it.kind==="draw"){let L=0;try{L=el.getTotalLength();}catch(e){}
+  if(!L){el.style.opacity=1;return;}
+  el.style.strokeDasharray=L;el.style.strokeDashoffset=L;
+  const a=el.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:Math.max(60,dur),delay,fill:"forwards",easing:"linear"});
+  a.onfinish=()=>{el.style.strokeDashoffset=0;if(it.dashed)el.style.strokeDasharray="";};
+ }else if(it.kind==="fade"){el.style.opacity=0;el.animate([{opacity:0},{opacity:1}],{duration:Math.max(60,dur),delay,fill:"forwards",easing:"ease-out"});}
+ else if(it.kind==="ring"){el.animate([{opacity:.9,r:"1"},{opacity:0,r:"8"}],{duration:1100,delay,iterations:2,easing:"ease-out"});}
+}
+function settle(it){const el=it.el;
+ if(it.kind==="draw"){el.style.strokeDashoffset="";el.style.strokeDasharray="";}
+ else if(it.kind==="fade")el.style.opacity=1;
+ else if(it.kind==="ring")el.style.opacity=0;
+ else if(it.kind==="fn")it.fn();}
+function playBag(items){let cursor=0,last=0,end=0;
+ items.forEach(it=>{const d=(it.dur||400),start=it.par?last:cursor;last=start;
+  if(!it.par)cursor=start+d*0.72;end=Math.max(end,start+d);animateItem(it,start,d);});return end;}
+function applyAux(){LY.aux.style.opacity=document.getElementById("showaux").checked?1:0;}
+function clearAll(){Object.values(LY).forEach(g=>{while(g.firstChild)g.removeChild(g.firstChild);});
+ LY.aux.style.transition="";svg.classList.remove("deep");BAG=[];}
+function buildStep(i,anim){BAG=[];STEPS[i-1].build();const items=BAG.slice();if(anim)lastTotal=playBag(items);else items.forEach(settle);}
+function gotoStep(n,anim){n=Math.max(1,Math.min(STEPS.length,n));if(n===cur){updateUI();return;}
+ if(n<cur||!anim){clearAll();for(let i=1;i<=n;i++)buildStep(i,anim&&i===n);cur=n;}
+ else{for(let i=cur+1;i<=n;i++)buildStep(i,anim&&i===n);cur=n;}
+ applyAux();updateUI();}
+function stop(){playing=false;if(timer){clearTimeout(timer);timer=null;}}
+function reset(){stop();clearAll();cur=0;applyAux();updateUI();}
+function updateUI(){const list=document.getElementById("steplist");
+ [...list.children].forEach((b,i)=>b.classList.toggle("active",i===cur-1));
+ const s=cur>=1?STEPS[cur-1]:null;
+ document.getElementById("stepno").textContent=s?s.no:"00";
+ document.getElementById("steptitle").textContent=s?s.title:"准备";
+ document.getElementById("stepbody").innerHTML=s?s.body:"<p>点击「播放」或「下一步」开始。</p>";
+ document.getElementById("stepkeys").innerHTML=s&&s.keys.length?"<b>作图要点</b><ul>"+s.keys.map(k=>"<li>"+k+"</li>").join("")+"</ul>":"";
+ const f=document.getElementById("stepform");if(s&&s.form){f.style.display="block";f.textContent=s.form;}else f.style.display="none";
+ document.getElementById("bar").style.width=(cur/STEPS.length*100)+"%";
+ document.getElementById("btnPrev").disabled=cur<=0;document.getElementById("btnNext").disabled=cur>=STEPS.length;
+ document.getElementById("btnPlay").textContent=playing?"⏸ 暂停":"▶ 播放";}
+function play(){if(playing){stop();updateUI();return;}
+ if(cur>=STEPS.length){clearAll();cur=0;updateUI();}
+ playing=true;updateUI();
+ const tick=()=>{if(!playing)return;if(cur>=STEPS.length){playing=false;updateUI();return;}
+  gotoStep(cur+1,true);timer=setTimeout(tick,lastTotal+650);};
+ setTimeout(tick,120);}
+(function init(){const list=document.getElementById("steplist");
+ STEPS.forEach((s,i)=>{const b=document.createElement("button");b.className="stepbtn";
+  b.innerHTML=`<span class="num">${s.no}</span><span>${s.title}</span>`;
+  b.onclick=()=>{stop();gotoStep(i+1,true);};list.appendChild(b);});
+ const tb=document.getElementById("dimtable");
+ [["Ø20","杆部直径"],["Ø12","内孔直径"],["22","内孔深"],["38","杆长"],
+  ["117","球头圆心位置"],["124","总长"],["R42","颈部圆弧"],["R60","鼓包圆弧"],
+  ["Ø30","最高处直径"],["SR7","球头半径"]].forEach(([a,b])=>{
+   const d=document.createElement("div");d.className="dimrow";d.innerHTML=`<b>${a}</b><span>${b}</span>`;tb.appendChild(d);});
+ document.getElementById("btnPrev").onclick=()=>{stop();gotoStep(cur-1,false);};
+ document.getElementById("btnNext").onclick=()=>{stop();gotoStep(cur+1,true);};
+ document.getElementById("btnPlay").onclick=play;
+ document.getElementById("btnReset").onclick=reset;
+ document.getElementById("showaux").onchange=applyAux;
+ document.getElementById("btnPng").onclick=()=>{
+  const cl=svg.cloneNode(true);cl.setAttribute("width",1400);cl.setAttribute("height",644);
+  const s=new XMLSerializer().serializeToString(cl);
+  const url=URL.createObjectURL(new Blob([s],{type:"image/svg+xml;charset=utf-8"}));
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement("canvas");c.width=1400;c.height=644;
+   const x=c.getContext("2d");x.fillStyle="#fbfaf6";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+   const a=document.createElement("a");a.download="手柄-第"+cur+"步.png";a.href=c.toDataURL("image/png");a.click();URL.revokeObjectURL(url);};
+  img.src=url;};
+ document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"){stop();gotoStep(cur+1,true);e.preventDefault();}
+  else if(e.key==="ArrowLeft"){stop();gotoStep(cur-1,false);e.preventDefault();}
+  else if(e.key===" "){play();e.preventDefault();}});
+ const q=new URLSearchParams(location.search),st=parseInt(q.get("step")||"0",10);
+ if(st>0)gotoStep(Math.min(st,STEPS.length),false);else gotoStep(1,false);
+ updateUI();applyAux();
+})();
+</script>
+</body>
+</html>
