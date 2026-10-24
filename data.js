@@ -23,6 +23,18 @@ window.EXERCISES = [
     page: "handle.html",
     thumb: "handle.png",
     added: "2026-10"
+  },
+  {
+    id: "cartoon",
+    title: "卡通人物（企鹅）",
+    cat: "圆弧连接",
+    level: "进阶",
+    steps: 12,
+    brief: "R1800 头部 + R6000/R3000 身体 + R1200 两只手 + 1600×3 腿脚：修正比例后的卡通轮廓，处处相切、左右对称。",
+    tags: ["R1800", "R6000", "R3000", "R1200", "R500", "R300", "1600", "4800"],
+    page: "cartoon.html",
+    thumb: "cartoon.png",
+    added: "2026-10"
   }
 ];
 
